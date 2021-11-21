@@ -1,0 +1,36 @@
+* {
+  margin: 0px;
+}
+
+.board > div {
+  display: flex;
+}
+
+.tile {
+  cursor: default !important;
+  border: 1px solid grey;
+  user-select: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: 24px;
+  height: 24px;
+  transition: all 0.1s;
+}
+
+.tile.pre-game:hover {
+  background: cyan;
+}
+
+.tile.mine {
+  color: white;
+  font-weight: normal;
+}
+
+.tile.swept {
+  border-color: blue;
+  background: blue;
+  color: white;
+}
