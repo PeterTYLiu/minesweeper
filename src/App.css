@@ -13,24 +13,52 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 700;
   width: 24px;
   height: 24px;
   transition: all 0.1s;
+  background: lightseagreen;
 }
 
-.tile.pre-game:hover {
-  background: cyan;
+.tile:hover {
+  opacity: 0.8;
 }
 
 .tile.mine {
-  color: white;
   font-weight: normal;
 }
 
 .tile.swept {
-  border-color: blue;
-  background: blue;
-  color: white;
+  border-color: rgb(172, 172, 172);
+  background: lightgray;
+}
+
+.tile.swept.around-1 {
+  color: blue;
+}
+.tile.swept.around-2 {
+  color: green;
+}
+.tile.swept.around-3 {
+  color: red;
+}
+.tile.swept.around-4 {
+  color: darkblue;
+}
+.tile.swept.around-5 {
+  color: darkred;
+}
+.tile.swept.around-6 {
+  color: cadetblue;
+}
+.tile.swept.around-7 {
+  color: darkslateblue;
+}
+.tile.swept.around-8 {
+  color: black;
+}
+.tile.swept.around-0 {
+  color: #00000000;
+  transition: none;
 }
