@@ -10,7 +10,7 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "https://petertyliu.github.io/minesweeper",
+  "start_url": "./index.html",
   "display": "fullscreen",
   "theme_color": "#000000",
   "background_color": "#ffffff"
