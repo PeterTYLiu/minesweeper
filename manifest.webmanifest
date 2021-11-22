@@ -6,8 +6,7 @@
     {
       "src": "logo.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
+      "sizes": "192x192"
     }
   ],
   "start_url": "./index.html",
