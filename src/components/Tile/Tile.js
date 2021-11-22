@@ -16,8 +16,8 @@ export default function Tile({
         swept ? "swept" : ""
       } around-${minesAround}`}
       onClick={() => {
-        if (isMine) return loseGame();
-        if (!swept) {
+        if (isMine && tilesRemaining > 0) return loseGame(id);
+        if (!swept && tilesRemaining > 0) {
           const newBoardState = [...boardState];
           newBoardState[id - 1].swept = true;
           setTilesRemaining(tilesRemaining - 1);
@@ -32,7 +32,9 @@ export default function Tile({
         }
       }}
     >
-      {swept && <p>{isMine ? "💣" : minesAround}</p>}
+      {!swept && tilesRemaining > 0 ? null : (
+        <p>{isMine ? "💣" : minesAround}</p>
+      )}
     </div>
   );
 }

@@ -3,9 +3,11 @@ import Tile from "./components/Tile/Tile";
 import "./App.css";
 
 function App() {
-  let numOfRows = 20;
-  let numOfColumns = 10;
-  let numOfMines = 35;
+  let numOfRows = 20; //20;
+  let numOfColumns = 10; //10;
+  let numOfMines = 35; //35;
+  let currentFormat = `${numOfColumns}x${numOfRows}x${numOfMines}m`;
+  let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
 
   // Utility functions
 
@@ -21,7 +23,7 @@ function App() {
           c,
           r,
           isMine: false,
-          id: c + (r - 1) * 10,
+          id: c + (r - 1) * columns,
           swept: false,
         });
       }
@@ -74,23 +76,30 @@ function App() {
   // Game state
   const defaultBoardState = generateNewBoardState();
 
-  const [tilesRemaining, setTilesRemaining] = useState(
-    numOfRows * numOfColumns - numOfMines
-  );
-  const [inGame, setInGame] = useState(false);
+  const [tilesRemaining, setTilesRemaining] = useState(numOfRemainingTiles);
+  const [gameStatus, setGameStatus] = useState("preGame");
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [board, setBoard] = useState(defaultBoardState);
+  const [message, setMessage] = useState(
+    localStorage.getItem(currentFormat)
+      ? `🏆 ${localStorage.getItem(currentFormat) + "s"}`
+      : "🏆 none"
+  );
 
   // Timer
   useEffect(() => {
-    if (inGame) {
+    if (gameStatus == "inGame") {
       const timer = setInterval(() => {
         setTimeElapsed(Number((timeElapsed + 0.1).toFixed(1)));
       }, 100);
 
       return () => clearInterval(timer);
     }
-  }, [inGame, timeElapsed]);
+  }, [gameStatus, timeElapsed]);
+
+  useEffect(() => {
+    if (tilesRemaining == 0) winGame();
+  }, [tilesRemaining]);
 
   const startGame = (tileId) => {
     let newBoardState = generateNewBoardState();
@@ -109,24 +118,46 @@ function App() {
     );
     setBoard(newBoardState);
     setTimeElapsed(0);
-    setInGame(true);
+    setGameStatus("inGame");
   };
 
-  const winGame = () => {};
+  const winGame = () => {
+    setGameStatus("postGame");
+    let prevRecordTime = localStorage.getItem(currentFormat);
+    if (!prevRecordTime || timeElapsed < prevRecordTime) {
+      localStorage.setItem(currentFormat, timeElapsed);
+      setMessage(`🎉 New record!`);
+    }
+  };
 
-  const loseGame = () => {
-    alert(`You lose! Your time: ${timeElapsed} s`);
-    setInGame(false);
+  const loseGame = (id) => {
+    navigator.vibrate(200);
+    let newBoardState = [...board];
+    for (let t = 0; t < newBoardState.length; t++) {
+      newBoardState[t].swept = true;
+    }
+    setBoard(newBoardState);
+    setGameStatus("postGame");
+  };
+
+  const prepNewGame = () => {
+    setBoard(defaultBoardState);
+    setTilesRemaining(numOfRemainingTiles);
     setTimeElapsed(0);
-    setTilesRemaining(numOfRows * numOfColumns - numOfMines);
+    setGameStatus("preGame");
+    setMessage(
+      localStorage.getItem(currentFormat)
+        ? `🏆 ${localStorage.getItem(currentFormat) + "s"}`
+        : "🏆 none"
+    );
   };
 
   const PreGameTiles = defaultBoardState.map((tile, i) => {
     if (tile.c == 1) {
       return (
-        <div style={{ lineHeight: 0 }} key={`pg-${i}`}>
+        <div key={`pg-${i}`}>
           {board.map((innerTile) => {
-            if (innerTile.r == i / 10 + 1)
+            if (innerTile.r == i / numOfColumns + 1)
               return (
                 <div
                   className="tile pre-game"
@@ -145,9 +176,9 @@ function App() {
   const Tiles = board.map((tile, i) => {
     if (tile.c == 1) {
       return (
-        <div style={{ lineHeight: 0 }} key={i}>
+        <div key={i}>
           {board.map((innerTile) => {
-            if (innerTile.r == i / 10 + 1)
+            if (innerTile.r == i / numOfColumns + 1)
               return (
                 <Tile
                   minesAround={innerTile.minesAround}
@@ -174,11 +205,23 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        {tilesRemaining},{" "}
-        {timeElapsed.toString().includes(".")
-          ? timeElapsed
-          : timeElapsed.toString() + ".0"}
-        <div className="board">{inGame ? Tiles : PreGameTiles}</div>
+        <div className="controls">
+          <span>{message}</span>
+
+          {gameStatus == "postGame" && (
+            <div onClick={prepNewGame}>{tilesRemaining == 0 ? "😎" : "😬"}</div>
+          )}
+
+          <span style={{ textAlign: "right" }}>
+            {timeElapsed.toString().includes(".")
+              ? timeElapsed
+              : timeElapsed.toString() + ".0"}
+            s
+          </span>
+        </div>
+        <div className={`board ${gameStatus == "postGame" && "postGame"}`}>
+          {gameStatus == "preGame" ? PreGameTiles : Tiles}
+        </div>
       </div>
     </div>
   );
