@@ -4,7 +4,7 @@
   "description": "A minesweeper game made with react",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "./logo.png",
       "type": "image/png",
       "sizes": "192x192"
     }
