@@ -3,9 +3,9 @@ import Tile from "./components/Tile/Tile";
 import "./App.css";
 
 function App() {
-  let numOfRows = 20; //20;
+  let numOfRows = 5; //20;
   let numOfColumns = 10; //10;
-  let numOfMines = 35; //35;
+  let numOfMines = 5; //35;
   let currentFormat = `${numOfColumns}x${numOfRows}x${numOfMines}m`;
   let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
 
@@ -131,13 +131,16 @@ function App() {
   };
 
   const loseGame = (id) => {
+    setGameStatus("postGame");
+    document
+      .querySelector(`.id-${id}`)
+      .setAttribute("style", "background: red");
     navigator.vibrate(200);
     let newBoardState = [...board];
     for (let t = 0; t < newBoardState.length; t++) {
-      newBoardState[t].swept = true;
+      if (newBoardState[t].isMine) newBoardState[t].swept = true;
     }
     setBoard(newBoardState);
-    setGameStatus("postGame");
   };
 
   const prepNewGame = () => {
@@ -194,6 +197,7 @@ function App() {
                   floodFill={floodFill}
                   id={innerTile.id}
                   loseGame={loseGame}
+                  gameStatus={gameStatus}
                 />
               );
           })}
