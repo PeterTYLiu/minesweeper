@@ -3,9 +3,9 @@ import Tile from "./components/Tile/Tile";
 import "./App.css";
 
 function App() {
-  let numOfRows = 5; //20;
+  let numOfRows = 20; //20;
   let numOfColumns = 10; //10;
-  let numOfMines = 5; //35;
+  let numOfMines = 35; //35;
   let currentFormat = `${numOfColumns}x${numOfRows}x${numOfMines}m`;
   let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
 
