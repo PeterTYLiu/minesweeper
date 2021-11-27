@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import Tile from "./components/Tile/Tile";
+import Tile from "./components/Tile";
 import Timer from "./components/Timer";
 import "./App.css";
+// Typescript
+import ITile from "./types/tile";
+import { gameStatuses } from "./types/gameStatuses";
 
 function App() {
   let numOfRows = 20; //20;
@@ -9,6 +12,15 @@ function App() {
   let numOfMines = 35; //35;
   let currentFormat = `${numOfColumns}x${numOfRows}x${numOfMines}m`;
   let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
+  let alertMessage = `New in version 1.2:
+  • Right-click or swipe a tile to flag it!
+
+  Coming soon:
+  • Chording
+  • Adjustable difficulty
+  • "Maybe" state for flagging
+  
+  Made with ❤️ by PL`;
 
   // Utility functions
 
@@ -17,7 +29,7 @@ function App() {
     rows = numOfRows,
     mines = numOfMines
   ) {
-    let boardState = [];
+    let boardState: ITile[] = [];
     for (let r = 1; r <= rows; r++) {
       for (let c = 1; c <= columns; c++) {
         boardState.push({
@@ -26,6 +38,8 @@ function App() {
           isMine: false,
           id: c + (r - 1) * columns,
           swept: false,
+          flagStatus: "unflagged",
+          minesAround: 0,
         });
       }
     }
@@ -54,7 +68,7 @@ function App() {
     return boardState;
   }
 
-  function floodFill(triggerTile, boardState) {
+  function floodFill(triggerTile: ITile, boardState: ITile[]) {
     const { r, c } = triggerTile;
     let tilesAround = [
       boardState.find((tile) => tile.r == r && tile.c == c + 1),
@@ -67,8 +81,8 @@ function App() {
       boardState.find((tile) => tile.r == r - 1 && tile.c == c + 1),
     ].filter((tile) => tile?.id && !tile?.swept);
     tilesAround.forEach((tile) => {
-      boardState[tile.id - 1].swept = true;
-      if (tile.minesAround == 0 && tilesAround.length > 0) {
+      if (tile) boardState[tile.id - 1].swept = true;
+      if (tile?.minesAround == 0 && tilesAround.length > 0) {
         floodFill(tile, boardState);
       }
     });
@@ -78,20 +92,19 @@ function App() {
   const defaultBoardState = generateNewBoardState();
 
   const [tilesRemaining, setTilesRemaining] = useState(numOfRemainingTiles);
-  const [gameStatus, setGameStatus] = useState("preGame");
-  const [board, setBoard] = useState(defaultBoardState);
+  const [gameStatus, setGameStatus] = useState<gameStatuses>("preGame");
+  const [board, setBoard] = useState<ITile[]>(defaultBoardState);
   const [message, setMessage] = useState(
     localStorage.getItem(currentFormat)
       ? `🏆 ${localStorage.getItem(currentFormat) + "s"}`
       : "🏆 none"
   );
 
-  // Timer
   useEffect(() => {
     if (tilesRemaining == 0) winGame();
   }, [tilesRemaining]);
 
-  const startGame = (tileId) => {
+  const startGame = (tileId: number) => {
     let newBoardState = generateNewBoardState();
     while (
       newBoardState[tileId - 1].isMine ||
@@ -114,11 +127,11 @@ function App() {
     setGameStatus("wonGame");
   };
 
-  const loseGame = (id) => {
+  const loseGame = (id: number) => {
     setGameStatus("lostGame");
     document
       .querySelector(`.id-${id}`)
-      .setAttribute("style", "background: red");
+      ?.setAttribute("style", "background: red");
     let newBoardState = [...board];
     for (let t = 0; t < newBoardState.length; t++) {
       if (newBoardState[t].isMine) newBoardState[t].swept = true;
@@ -140,7 +153,12 @@ function App() {
   const PreGameTiles = defaultBoardState.map((tile, i) => {
     if (tile.c == 1) {
       return (
-        <div key={`pg-${i}`}>
+        <div
+          key={`pg-${i}`}
+          onContextMenu={(e) => {
+            e.preventDefault();
+          }}
+        >
           {board.map((innerTile) => {
             if (innerTile.r == i / numOfColumns + 1)
               return (
@@ -180,6 +198,7 @@ function App() {
                   id={innerTile.id}
                   loseGame={loseGame}
                   gameStatus={gameStatus}
+                  flagStatus={innerTile.flagStatus}
                 />
               );
           })}
@@ -197,16 +216,13 @@ function App() {
           {gameStatus == "wonGame" && <div onClick={prepNewGame}>{"😎"}</div>}
           {gameStatus == "lostGame" && <div onClick={prepNewGame}>{"😬"}</div>}
           {(gameStatus == "preGame" || gameStatus == "inGame") && (
-            <span
-              style={{
-                width: "60px",
-                opacity: "0.7",
-                textAlign: "center",
-                color: "black",
+            <div
+              onClick={() => {
+                alert(alertMessage);
               }}
             >
-              v1.1.1
-            </span>
+              {"❔"}
+            </div>
           )}
 
           <span style={{ textAlign: "right" }}>
