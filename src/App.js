@@ -119,7 +119,6 @@ function App() {
     document
       .querySelector(`.id-${id}`)
       .setAttribute("style", "background: red");
-    navigator.vibrate(200);
     let newBoardState = [...board];
     for (let t = 0; t < newBoardState.length; t++) {
       if (newBoardState[t].isMine) newBoardState[t].swept = true;
@@ -206,7 +205,7 @@ function App() {
                 color: "black",
               }}
             >
-              v1.1
+              v1.1.1
             </span>
           )}
 

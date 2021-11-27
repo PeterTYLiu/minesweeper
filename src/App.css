@@ -5,9 +5,9 @@
 * {
   margin: 0px;
 }
-html,
-.App {
+body {
   background: rgb(40, 41, 56);
+  overscroll-behavior: contain;
 }
 
 .App {
