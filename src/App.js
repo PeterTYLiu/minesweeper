@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Tile from "./components/Tile/Tile";
+import Timer from "./components/Timer";
 import "./App.css";
 
 function App() {
@@ -78,7 +79,6 @@ function App() {
 
   const [tilesRemaining, setTilesRemaining] = useState(numOfRemainingTiles);
   const [gameStatus, setGameStatus] = useState("preGame");
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [board, setBoard] = useState(defaultBoardState);
   const [message, setMessage] = useState(
     localStorage.getItem(currentFormat)
@@ -87,16 +87,6 @@ function App() {
   );
 
   // Timer
-  useEffect(() => {
-    if (gameStatus == "inGame") {
-      const timer = setInterval(() => {
-        setTimeElapsed(Number((timeElapsed + 0.1).toFixed(1)));
-      }, 100);
-
-      return () => clearInterval(timer);
-    }
-  }, [gameStatus, timeElapsed]);
-
   useEffect(() => {
     if (tilesRemaining == 0) winGame();
   }, [tilesRemaining]);
@@ -117,21 +107,15 @@ function App() {
       newBoardState.filter((tile) => !tile.swept && !tile.isMine).length
     );
     setBoard(newBoardState);
-    setTimeElapsed(0);
     setGameStatus("inGame");
   };
 
   const winGame = () => {
-    setGameStatus("postGame");
-    let prevRecordTime = localStorage.getItem(currentFormat);
-    if (!prevRecordTime || timeElapsed < prevRecordTime) {
-      localStorage.setItem(currentFormat, timeElapsed);
-      setMessage(`🎉 New record!`);
-    }
+    setGameStatus("wonGame");
   };
 
   const loseGame = (id) => {
-    setGameStatus("postGame");
+    setGameStatus("lostGame");
     document
       .querySelector(`.id-${id}`)
       .setAttribute("style", "background: red");
@@ -146,7 +130,6 @@ function App() {
   const prepNewGame = () => {
     setBoard(defaultBoardState);
     setTilesRemaining(numOfRemainingTiles);
-    setTimeElapsed(0);
     setGameStatus("preGame");
     setMessage(
       localStorage.getItem(currentFormat)
@@ -212,18 +195,34 @@ function App() {
         <div className="controls">
           <span>{message}</span>
 
-          {gameStatus == "postGame" && (
-            <div onClick={prepNewGame}>{tilesRemaining == 0 ? "😎" : "😬"}</div>
+          {gameStatus == "wonGame" && <div onClick={prepNewGame}>{"😎"}</div>}
+          {gameStatus == "lostGame" && <div onClick={prepNewGame}>{"😬"}</div>}
+          {(gameStatus == "preGame" || gameStatus == "inGame") && (
+            <span
+              style={{
+                width: "60px",
+                opacity: "0.7",
+                textAlign: "center",
+                color: "black",
+              }}
+            >
+              v1.1
+            </span>
           )}
 
           <span style={{ textAlign: "right" }}>
-            {timeElapsed.toString().includes(".")
-              ? timeElapsed
-              : timeElapsed.toString() + ".0"}
-            s
+            <Timer
+              gameStatus={gameStatus}
+              setMessage={setMessage}
+              currentFormat={currentFormat}
+            />
           </span>
         </div>
-        <div className={`board ${gameStatus == "postGame" && "postGame"}`}>
+        <div
+          className={`board ${
+            (gameStatus == "lostGame" || gameStatus == "wonGame") && "postGame"
+          }`}
+        >
           {gameStatus == "preGame" ? PreGameTiles : Tiles}
         </div>
       </div>

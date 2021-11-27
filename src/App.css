@@ -1,3 +1,7 @@
+:root {
+  --unswept-border-width: 3.5px;
+}
+
 * {
   margin: 0px;
 }
@@ -60,10 +64,10 @@ html,
   min-width: 34px;
   min-height: 34px;
   background: rgb(29, 145, 180);
-  border-top: 3px solid rgba(255, 255, 255, 0.4);
-  border-left: 3px solid rgb(0, 0, 0, 0.2);
-  border-right: 3px solid rgb(255, 255, 255, 0.2);
-  border-bottom: 3px solid rgb(0, 0, 0, 0.4);
+  border-top: var(--unswept-border-width) solid rgba(255, 255, 255, 0.4);
+  border-left: var(--unswept-border-width) solid rgb(0, 0, 0, 0.2);
+  border-right: var(--unswept-border-width) solid rgb(255, 255, 255, 0.2);
+  border-bottom: var(--unswept-border-width) solid rgb(0, 0, 0, 0.4);
 }
 
 .tile:hover:not(.swept) {
@@ -86,10 +90,10 @@ html,
 
 .tile.mine.swept {
   background: rgb(255, 146, 146);
-  border-top: 3px solid rgba(255, 255, 255, 0.4);
-  border-left: 3px solid rgb(0, 0, 0, 0.2);
-  border-right: 3px solid rgb(255, 255, 255, 0.2);
-  border-bottom: 3px solid rgb(0, 0, 0, 0.4);
+  border-top: var(--unswept-border-width) solid rgba(255, 255, 255, 0.4);
+  border-left: var(--unswept-border-width) solid rgb(0, 0, 0, 0.2);
+  border-right: var(--unswept-border-width) solid rgb(255, 255, 255, 0.2);
+  border-bottom: var(--unswept-border-width) solid rgb(0, 0, 0, 0.4);
 }
 
 .tile.swept.around-1 {
