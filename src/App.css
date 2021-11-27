@@ -120,3 +120,17 @@ body {
 .tile.swept.around-8 {
   color: black;
 }
+
+@keyframes plantFlag {
+  from {
+    transform: translate(4px, -35px) rotate(9deg);
+    opacity: 0.5;
+  }
+  to {
+    transform: translate(0px, 0px) rotate(0deg);
+    opacity: 1;
+  }
+}
+.flagged {
+  animation: plantFlag 0.08s ease-in;
+}
