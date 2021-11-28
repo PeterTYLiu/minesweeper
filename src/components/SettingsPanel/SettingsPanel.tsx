@@ -25,7 +25,8 @@ export default function SettingsPanel({
     let installedRelatedApps = await (
       navigator as any
     ).getInstalledRelatedApps();
-    if (installedRelatedApps.length) showPWAHint = false;
+    if (await installedRelatedApps.length) showPWAHint = false;
+    console.log(await installedRelatedApps);
   })();
 
   return (
