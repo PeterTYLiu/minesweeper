@@ -9,7 +9,7 @@
       "sizes": "192x192"
     }
   ],
-  "start_url": "/",
+  "start_url": "./",
   "related_applications": [
     {
       "platform": "webapp",
