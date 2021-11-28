@@ -20,6 +20,14 @@ export default function SettingsPanel({
     localStorage.setItem("flaggingMode", newFlaggingMode);
   };
 
+  let showPWAHint = true;
+  (async () => {
+    let installedRelatedApps = await (
+      navigator as any
+    ).getInstalledRelatedApps();
+    if (installedRelatedApps.length) showPWAHint = false;
+  })();
+
   return (
     <div
       style={{
@@ -50,30 +58,37 @@ export default function SettingsPanel({
             checked={flaggingMode === "off" ? false : true}
             onChange={handleChangeFlaggingMode}
           />
-          <h3>Flagging</h3>
+          <div>
+            <h3>Flagging</h3>
+            <p>Swipe or right-click a tile to flag it</p>
+          </div>
         </label>
         <hr />
-        <div>
-          <h4>New in version 1.3.1:</h4>
-          <ul>
-            <li>Toggle flaggability</li>
-            <li>🐛 fixes</li>
-          </ul>
+        {showPWAHint ? (
+          <>
+            <p>
+              This is a{" "}
+              <a
+                href="https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/"
+                target="_blank"
+              >
+                progressive web app
+              </a>
+              . For the best minesweeping experience, install this app on your
+              device. No tracking, completely offline.
+            </p>
+            <hr />
+          </>
+        ) : null}
+
+        <p>
+          Made with ❤️ by{" "}
+          <a href="https://www.linkedin.com/in/peter-ty-liu/" target="_blank">
+            PL
+          </a>
           <br />
-          <h4>Coming soon:</h4>
-          <ul>
-            <li>Chording</li>
-            <li>Adjustable difficulty</li>
-            <li>"Maybe" state for flagging</li>
-          </ul>
-          <br />
-          <p>
-            Made with ❤️ by{" "}
-            <a href="https://www.linkedin.com/in/peter-ty-liu/" target="_blank">
-              PL
-            </a>
-          </p>
-        </div>
+          <span style={{ fontSize: "12px" }}>v1.3.1.1 (27/11/2021)</span>
+        </p>
         <div>
           <div
             className="ms-button"

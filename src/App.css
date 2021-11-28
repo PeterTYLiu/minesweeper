@@ -141,8 +141,12 @@ input[type="checkbox"] {
   width: 26px;
   height: 26px;
   margin-right: 12px;
+  flex-shrink: 0;
 }
 .settings-panel label {
   display: flex;
-  align-items: center;
+}
+.settings-panel label p {
+  margin-top: 4px;
+  font-size: 14px;
 }
