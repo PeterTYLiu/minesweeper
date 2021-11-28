@@ -9,7 +9,7 @@
       "sizes": "192x192"
     }
   ],
-  "scope": "/",
+  "scope": "./",
   "start_url": "./",
   "related_applications": [
     {
