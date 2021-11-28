@@ -4,6 +4,7 @@
 
 * {
   margin: 0px;
+  box-sizing: border-box;
 }
 body {
   background: rgb(40, 41, 56);
@@ -18,7 +19,7 @@ body {
 
 .controls {
   height: 40px;
-  padding-bottom: 12px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,16 +29,18 @@ body {
 .controls > span {
   width: 143px;
 }
-.controls > div {
+.ms-button {
   font-size: 1.7rem;
-  background: #ffffff44;
+  background: rgb(128, 128, 128);
   padding: 4px;
   border-radius: 4px;
-  border: 1px solid #ffffff55;
+  border: 1px solid lightgrey;
   cursor: default;
+  text-align: center;
+  color: white;
 }
-.controls > div:hover {
-  background: #ffffff66;
+.ms-button:hover {
+  background: rgb(163, 163, 163);
 }
 .board {
   display: flex;
@@ -49,7 +52,6 @@ body {
 }
 
 .tile {
-  box-sizing: border-box;
   cursor: default !important;
   user-select: none !important;
   display: inline-flex;
@@ -133,4 +135,14 @@ body {
 }
 .flagged {
   animation: plantFlag 0.08s ease-in;
+}
+
+input[type="checkbox"] {
+  width: 26px;
+  height: 26px;
+  margin-right: 12px;
+}
+.settings-panel label {
+  display: flex;
+  align-items: center;
 }

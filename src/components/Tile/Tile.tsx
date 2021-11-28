@@ -3,6 +3,7 @@ import { useSwipeable } from "react-swipeable";
 // Typescript
 import ITile from "../../types/tile";
 import { gameStatuses } from "../../types/gameStatuses";
+import { flaggingModes } from "../../types/settings";
 
 interface TileProps extends ITile {
   tilesRemaining: number;
@@ -12,6 +13,7 @@ interface TileProps extends ITile {
   setBoardState(arg0: ITile[]): any;
   loseGame(id: number): any;
   gameStatus: gameStatuses;
+  flaggingMode: flaggingModes;
 }
 
 export default function Tile({
@@ -27,25 +29,25 @@ export default function Tile({
   flagStatus,
   loseGame,
   gameStatus,
+  flaggingMode,
 }: TileProps) {
   const toggleFlagStatus = () => {
     if (!swept) {
       const newBoardState = [...boardState];
       newBoardState[id - 1].flagStatus =
-        flagStatus == "flagged" ? "unflagged" : "flagged";
+        flagStatus === "flagged" ? "unflagged" : "flagged";
       setBoardState(newBoardState);
     }
   };
 
   const handleClick = () => {
-    if (flagStatus == "unflagged" && isMine && gameStatus == "inGame")
+    if (flagStatus === "unflagged" && isMine && gameStatus === "inGame")
       return loseGame(id);
-    if (flagStatus == "unflagged" && !swept && gameStatus == "inGame") {
+    if (flagStatus === "unflagged" && !swept && gameStatus === "inGame") {
       const newBoardState = [...boardState];
       newBoardState[id - 1].swept = true;
       setTilesRemaining(tilesRemaining - 1);
-      // If minesAround == 0, initiate a flood fill on all contiguous 0s and their perimeter
-      if (minesAround == 0 && !isMine) {
+      if (minesAround === 0 && !isMine) {
         floodFill(newBoardState[id - 1], newBoardState);
         setTilesRemaining(
           newBoardState.filter((tile) => !tile.swept && !tile.isMine).length
@@ -61,13 +63,13 @@ export default function Tile({
 
   const TileContents = (
     <>
-      {((!swept && gameStatus == "inGame") || (swept && isMine)) &&
-      flagStatus == "flagged" ? (
+      {((!swept && gameStatus === "inGame") || (swept && isMine)) &&
+      flagStatus === "flagged" ? (
         <p style={{ fontWeight: "normal" }} className={flagStatus}>
           🚩
         </p>
       ) : null}
-      {gameStatus !== "inGame" && !isMine && flagStatus == "flagged" ? (
+      {gameStatus !== "inGame" && !isMine && flagStatus === "flagged" ? (
         <>
           <p style={{ fontWeight: "normal" }} className={flagStatus}>
             🚩
@@ -84,19 +86,23 @@ export default function Tile({
           </span>
         </>
       ) : null}
-      {!swept && flagStatus == "maybe" ? <p>❔</p> : null}
-      {gameStatus == "inGame" ? (
+      {!swept && flagStatus === "maybe" ? <p>❔</p> : null}
+      {gameStatus === "inGame" ? (
         !isMine && minesAround && swept ? (
           <p>{minesAround}</p>
         ) : null
       ) : isMine ? (
         flagStatus !== "flagged" ? (
-          gameStatus == "wonGame" ? (
+          gameStatus === "wonGame" ? (
             <p>🌼</p>
           ) : (
             <p>💣</p>
           )
-        ) : null
+        ) : gameStatus === "wonGame" ? (
+          <p>🌼</p>
+        ) : (
+          <p>🚩</p>
+        )
       ) : minesAround && swept ? (
         <p>{minesAround}</p>
       ) : null}
@@ -111,7 +117,7 @@ export default function Tile({
       } around-${minesAround}`}
       onContextMenu={(e) => {
         e.preventDefault();
-        toggleFlagStatus();
+        if (flaggingMode === "withoutMaybe") toggleFlagStatus();
       }}
       onClick={handleClick}
     >

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import Tile from "./components/Tile";
 import Timer from "./components/Timer";
+import SettingsPanel from "./components/SettingsPanel";
 import "./App.css";
 // Typescript
 import ITile from "./types/tile";
 import { gameStatuses } from "./types/gameStatuses";
+import { flaggingModes } from "./types/settings";
 
 function App() {
   let numOfRows = 20; //20;
@@ -12,15 +14,12 @@ function App() {
   let numOfMines = 35; //35;
   let currentFormat = `${numOfColumns}x${numOfRows}x${numOfMines}m`;
   let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
-  let alertMessage = `New in version 1.2:
-  • Right-click or swipe a tile to flag it!
 
-  Coming soon:
-  • Chording
-  • Adjustable difficulty
-  • "Maybe" state for flagging
-  
-  Made with ❤️ by PL`;
+  // Settings
+  const [settingsPanelVisible, setSettingsPanelVisible] = useState(false);
+  const [flaggingMode, setFlaggingMode] = useState<flaggingModes>(
+    (localStorage.getItem("flaggingMode") as flaggingModes) || "withoutMaybe"
+  );
 
   // Utility functions
 
@@ -54,14 +53,14 @@ function App() {
     boardState.forEach((boardStateTile) => {
       let { r, c } = boardStateTile;
       boardStateTile.minesAround = [
-        boardState.find((tile) => tile.r == r && tile.c == c + 1),
-        boardState.find((tile) => tile.r == r && tile.c == c - 1),
-        boardState.find((tile) => tile.r == r + 1 && tile.c == c),
-        boardState.find((tile) => tile.r == r - 1 && tile.c == c),
-        boardState.find((tile) => tile.r == r + 1 && tile.c == c + 1),
-        boardState.find((tile) => tile.r == r - 1 && tile.c == c - 1),
-        boardState.find((tile) => tile.r == r + 1 && tile.c == c - 1),
-        boardState.find((tile) => tile.r == r - 1 && tile.c == c + 1),
+        boardState.find((tile) => tile.r === r && tile.c === c + 1),
+        boardState.find((tile) => tile.r === r && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
       ].filter((tileAround) => tileAround?.isMine).length;
     });
 
@@ -71,18 +70,19 @@ function App() {
   function floodFill(triggerTile: ITile, boardState: ITile[]) {
     const { r, c } = triggerTile;
     let tilesAround = [
-      boardState.find((tile) => tile.r == r && tile.c == c + 1),
-      boardState.find((tile) => tile.r == r && tile.c == c - 1),
-      boardState.find((tile) => tile.r == r + 1 && tile.c == c),
-      boardState.find((tile) => tile.r == r - 1 && tile.c == c),
-      boardState.find((tile) => tile.r == r + 1 && tile.c == c + 1),
-      boardState.find((tile) => tile.r == r - 1 && tile.c == c - 1),
-      boardState.find((tile) => tile.r == r + 1 && tile.c == c - 1),
-      boardState.find((tile) => tile.r == r - 1 && tile.c == c + 1),
+      boardState.find((tile) => tile.r === r && tile.c === c + 1),
+      boardState.find((tile) => tile.r === r && tile.c === c - 1),
+      boardState.find((tile) => tile.r === r + 1 && tile.c === c),
+      boardState.find((tile) => tile.r === r - 1 && tile.c === c),
+      boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+      boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+      boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+      boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
     ].filter((tile) => tile?.id && !tile?.swept);
     tilesAround.forEach((tile) => {
-      if (tile) boardState[tile.id - 1].swept = true;
-      if (tile?.minesAround == 0 && tilesAround.length > 0) {
+      if (tile && tile.flagStatus === "unflagged")
+        boardState[tile.id - 1].swept = true;
+      if (tile?.minesAround === 0 && tilesAround.length > 0) {
         floodFill(tile, boardState);
       }
     });
@@ -101,14 +101,14 @@ function App() {
   );
 
   useEffect(() => {
-    if (tilesRemaining == 0) winGame();
+    if (tilesRemaining === 0) winGame();
   }, [tilesRemaining]);
 
   const startGame = (tileId: number) => {
     let newBoardState = generateNewBoardState();
     while (
       newBoardState[tileId - 1].isMine ||
-      newBoardState[tileId - 1].minesAround != 0
+      newBoardState[tileId - 1].minesAround !== 0
     ) {
       newBoardState = generateNewBoardState();
     }
@@ -151,7 +151,7 @@ function App() {
   };
 
   const PreGameTiles = defaultBoardState.map((tile, i) => {
-    if (tile.c == 1) {
+    if (tile.c === 1) {
       return (
         <div
           key={`pg-${i}`}
@@ -160,7 +160,7 @@ function App() {
           }}
         >
           {board.map((innerTile) => {
-            if (innerTile.r == i / numOfColumns + 1)
+            if (innerTile.r === i / numOfColumns + 1) {
               return (
                 <div
                   className="tile pre-game"
@@ -170,18 +170,21 @@ function App() {
                   key={`pg-r${innerTile.r}c${innerTile.c}`}
                 />
               );
+            }
+            return null;
           })}
         </div>
       );
     }
+    return null;
   });
 
   const Tiles = board.map((tile, i) => {
-    if (tile.c == 1) {
+    if (tile.c === 1) {
       return (
         <div key={i}>
           {board.map((innerTile) => {
-            if (innerTile.r == i / numOfColumns + 1)
+            if (innerTile.r === i / numOfColumns + 1) {
               return (
                 <Tile
                   minesAround={innerTile.minesAround}
@@ -199,29 +202,49 @@ function App() {
                   loseGame={loseGame}
                   gameStatus={gameStatus}
                   flagStatus={innerTile.flagStatus}
+                  flaggingMode={flaggingMode}
                 />
               );
+            }
+            return null;
           })}
         </div>
       );
     }
+    return null;
   });
 
   return (
     <div className="App">
+      {settingsPanelVisible && (
+        <SettingsPanel
+          flaggingMode={flaggingMode}
+          setFlaggingMode={setFlaggingMode}
+          setSettingsPanelVisible={setSettingsPanelVisible}
+        />
+      )}
       <div className="container">
         <div className="controls">
           <span>{message}</span>
 
-          {gameStatus == "wonGame" && <div onClick={prepNewGame}>{"😎"}</div>}
-          {gameStatus == "lostGame" && <div onClick={prepNewGame}>{"😬"}</div>}
-          {(gameStatus == "preGame" || gameStatus == "inGame") && (
+          {gameStatus === "wonGame" && (
+            <div className="ms-button" onClick={prepNewGame}>
+              {"😎"}
+            </div>
+          )}
+          {gameStatus === "lostGame" && (
+            <div className="ms-button" onClick={prepNewGame}>
+              {"😬"}
+            </div>
+          )}
+          {gameStatus === "preGame" && (
             <div
+              className="ms-button"
               onClick={() => {
-                alert(alertMessage);
+                setSettingsPanelVisible(true);
               }}
             >
-              {"❔"}
+              {"⚙️"}
             </div>
           )}
 
@@ -235,10 +258,11 @@ function App() {
         </div>
         <div
           className={`board ${
-            (gameStatus == "lostGame" || gameStatus == "wonGame") && "postGame"
+            (gameStatus === "lostGame" || gameStatus === "wonGame") &&
+            "postGame"
           }`}
         >
-          {gameStatus == "preGame" ? PreGameTiles : Tiles}
+          {gameStatus === "preGame" ? PreGameTiles : Tiles}
         </div>
       </div>
     </div>

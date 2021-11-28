@@ -14,7 +14,7 @@ export default function Timer({
   const [timeElapsed, setTimeElapsed] = useState(0);
 
   useEffect(() => {
-    if (gameStatus == "inGame") {
+    if (gameStatus === "inGame") {
       const timer = setInterval(() => {
         setTimeElapsed(Number((timeElapsed + 0.1).toFixed(1)));
       }, 100);
@@ -26,7 +26,7 @@ export default function Timer({
   useEffect(() => {
     console.log(`The game status is ${gameStatus}`);
 
-    if (gameStatus == "wonGame") {
+    if (gameStatus === "wonGame") {
       let prevRecordTime = localStorage.getItem(currentFormat);
       if (!prevRecordTime || timeElapsed < Number(prevRecordTime)) {
         localStorage.setItem(currentFormat, timeElapsed.toString());
@@ -34,7 +34,7 @@ export default function Timer({
         console.log(`New record: ${timeElapsed}s`);
       }
     }
-    if (gameStatus == "preGame") {
+    if (gameStatus === "preGame") {
       setTimeElapsed(0);
     }
   }, [gameStatus]);
