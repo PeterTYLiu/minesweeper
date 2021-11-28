@@ -161,7 +161,7 @@ export default function SettingsPanel({
             PL
           </a>
           <br />
-          <span style={{ fontSize: "12px" }}>v1.4 (28/11/2021)</span>
+          <span style={{ fontSize: "12px" }}>v1.4.1 (28/11/2021)</span>
         </p>
       </div>
     </div>

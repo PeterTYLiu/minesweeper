@@ -32,7 +32,7 @@ export default function Tile({
   flaggingMode,
 }: TileProps) {
   const toggleFlagStatus = () => {
-    if (!swept) {
+    if (!swept && flaggingMode === "withoutMaybe") {
       const newBoardState = [...boardState];
       newBoardState[id - 1].flagStatus =
         flagStatus === "flagged" ? "unflagged" : "flagged";
@@ -58,7 +58,9 @@ export default function Tile({
   };
 
   const swipeHandler = useSwipeable({
-    onSwiped: () => toggleFlagStatus(),
+    onSwiped: () => {
+      toggleFlagStatus();
+    },
   });
 
   const TileContents = (
@@ -115,7 +117,7 @@ export default function Tile({
       } around-${minesAround}`}
       onContextMenu={(e) => {
         e.preventDefault();
-        if (flaggingMode === "withoutMaybe") toggleFlagStatus();
+        toggleFlagStatus();
       }}
       onClick={handleClick}
     >
