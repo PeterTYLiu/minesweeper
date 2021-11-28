@@ -9,6 +9,7 @@
       "sizes": "192x192"
     }
   ],
+  "scope": "/",
   "start_url": "./",
   "related_applications": [
     {
