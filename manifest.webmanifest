@@ -10,6 +10,12 @@
     }
   ],
   "start_url": "./index.html",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://petertyliu.github.io/minesweeper/manifest.webmanifest"
+    }
+  ],
   "display": "fullscreen",
   "theme_color": "#000000",
   "background_color": "#ffffff"
