@@ -100,9 +100,7 @@ export default function Tile({
           )
         ) : gameStatus === "wonGame" ? (
           <p>🌼</p>
-        ) : (
-          <p>🚩</p>
-        )
+        ) : null
       ) : minesAround && swept ? (
         <p>{minesAround}</p>
       ) : null}

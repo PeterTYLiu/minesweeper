@@ -54,7 +54,7 @@ export default function SettingsPanel({
         </label>
         <hr />
         <div>
-          <h4>New in version 1.3:</h4>
+          <h4>New in version 1.3.1:</h4>
           <ul>
             <li>Toggle flaggability</li>
             <li>🐛 fixes</li>
