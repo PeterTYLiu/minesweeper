@@ -35,9 +35,10 @@ body {
   padding: 4px;
   border-radius: 4px;
   border: 1px solid lightgrey;
-  cursor: default;
+  cursor: pointer;
   text-align: center;
   color: white;
+  user-select: none;
 }
 .ms-button:hover {
   background: rgb(163, 163, 163);
@@ -135,18 +136,4 @@ body {
 }
 .flagged {
   animation: plantFlag 0.08s ease-in;
-}
-
-input[type="checkbox"] {
-  width: 26px;
-  height: 26px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-.settings-panel label {
-  display: flex;
-}
-.settings-panel label p {
-  margin-top: 4px;
-  font-size: 14px;
 }

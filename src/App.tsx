@@ -9,17 +9,21 @@ import { gameStatuses } from "./types/gameStatuses";
 import { flaggingModes } from "./types/settings";
 
 function App() {
-  let numOfRows = 20; //20;
-  let numOfColumns = 10; //10;
-  let numOfMines = 35; //35;
-  let currentFormat = `${numOfColumns}x${numOfRows}x${numOfMines}m`;
-  let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
-
+  //defaults
+  let numOfRows = 20;
+  let numOfColumns = 10;
+  let defaultNumOfMines = 35;
   // Settings
   const [settingsPanelVisible, setSettingsPanelVisible] = useState(false);
+  const [numOfMines, setNumOfMines] = useState(
+    localStorage.getItem("numOfMines")
+      ? Number(localStorage.getItem("numOfMines"))
+      : defaultNumOfMines
+  );
   const [flaggingMode, setFlaggingMode] = useState<flaggingModes>(
     (localStorage.getItem("flaggingMode") as flaggingModes) || "withoutMaybe"
   );
+  let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
 
   // Utility functions
 
@@ -95,10 +99,25 @@ function App() {
   const [gameStatus, setGameStatus] = useState<gameStatuses>("preGame");
   const [board, setBoard] = useState<ITile[]>(defaultBoardState);
   const [message, setMessage] = useState(
-    localStorage.getItem(currentFormat)
-      ? `🏆 ${localStorage.getItem(currentFormat) + "s"}`
+    localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
+      ? `🏆 ${
+          localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`) +
+          "s"
+        }`
       : "🏆 none"
   );
+
+  useEffect(() => {
+    setMessage(
+      localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
+        ? `🏆 ${
+            localStorage.getItem(
+              `${numOfColumns}x${numOfRows}x${numOfMines}m`
+            ) + "s"
+          }`
+        : "🏆 none"
+    );
+  }, [numOfMines]);
 
   useEffect(() => {
     if (tilesRemaining === 0) winGame();
@@ -144,8 +163,12 @@ function App() {
     setTilesRemaining(numOfRemainingTiles);
     setGameStatus("preGame");
     setMessage(
-      localStorage.getItem(currentFormat)
-        ? `🏆 ${localStorage.getItem(currentFormat) + "s"}`
+      localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
+        ? `🏆 ${
+            localStorage.getItem(
+              `${numOfColumns}x${numOfRows}x${numOfMines}m`
+            ) + "s"
+          }`
         : "🏆 none"
     );
   };
@@ -221,6 +244,8 @@ function App() {
           flaggingMode={flaggingMode}
           setFlaggingMode={setFlaggingMode}
           setSettingsPanelVisible={setSettingsPanelVisible}
+          setNumOfMines={setNumOfMines}
+          numOfMines={numOfMines}
         />
       )}
       <div className="container">
@@ -237,6 +262,13 @@ function App() {
               {"😬"}
             </div>
           )}
+          {gameStatus === "inGame" && (
+            <span style={{ width: "auto" }}>
+              💣{" "}
+              {numOfMines -
+                board.filter((tile) => tile.flagStatus == "flagged").length}
+            </span>
+          )}
           {gameStatus === "preGame" && (
             <div
               className="ms-button"
@@ -252,7 +284,7 @@ function App() {
             <Timer
               gameStatus={gameStatus}
               setMessage={setMessage}
-              currentFormat={currentFormat}
+              currentFormat={`${numOfColumns}x${numOfRows}x${numOfMines}m`}
             />
           </span>
         </div>

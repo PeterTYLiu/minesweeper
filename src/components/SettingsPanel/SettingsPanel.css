@@ -1,0 +1,61 @@
+input[type="checkbox"] {
+  width: 26px;
+  height: 26px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.settings-panel label {
+  display: flex;
+}
+.settings-panel h3 {
+  color: rgb(61, 61, 61);
+  font-size: 18px;
+}
+.settings-panel label p {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.difficulty-selector {
+  display: flex;
+  margin-bottom: 14px;
+}
+.difficulty-selector > div {
+  flex-basis: 85px;
+  flex-grow: 1;
+  text-align: center;
+  border: 1px solid rgb(189, 189, 189);
+  padding: 6px 0px;
+  user-select: none;
+  transition: all 0.3s;
+  background: rgb(231, 231, 231);
+  cursor: pointer;
+}
+.difficulty-selector p {
+  font-size: 14px;
+}
+
+.difficulty-selector > div:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-right: none;
+}
+.difficulty-selector > div:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left: none;
+}
+.difficulty-selector > div:hover {
+  background-color: rgb(211, 223, 255);
+  border-color: rgb(0, 45, 168);
+}
+.difficulty-selector > div.selected {
+  color: white !important;
+  background-color: rgb(52, 118, 218) !important;
+  border-color: rgb(0, 45, 168) !important;
+  cursor: default;
+}
+.difficulty-selector > div.selected h3 {
+  color: white !important;
+}
