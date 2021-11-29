@@ -2,6 +2,8 @@ import React from "react";
 import { flaggingModes } from "../../types/settings";
 import "./SettingsPanel.css";
 
+const versionAndDate = "v1.4.3 (28/11/2021)";
+
 interface SettingsPanelProps {
   flaggingMode: flaggingModes;
   setFlaggingMode(flaggingMode: flaggingModes): any;
@@ -148,21 +150,39 @@ export default function SettingsPanel({
               >
                 progressive web app
               </a>
-              . For the best minesweeping experience, install this app on your
-              device. No tracking, completely offline.
+              . For the best minesweeping experience and offline play, install
+              this app on your device.
             </p>
             <hr />
           </>
         ) : null}
-
-        <p>
-          Made with ❤️ by{" "}
-          <a href="https://www.linkedin.com/in/peter-ty-liu/" target="_blank">
-            PL
-          </a>
-          <br />
-          <span style={{ fontSize: "12px" }}>v1.4.2 (28/11/2021)</span>
-        </p>
+        <div>
+          <p>
+            Made with ❤️ by{" "}
+            <a href="https://www.linkedin.com/in/peter-ty-liu/" target="_blank">
+              PL
+            </a>
+          </p>
+          <p style={{ fontSize: "14px", marginTop: "14px" }}>
+            Enjoying the game?{" "}
+            <a
+              href=""
+              onClick={(e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(
+                  "3AncbaTiG8qT7Lq2XhoXYGzMB4mpsGUCJ6"
+                );
+                alert("Bitcoin address copied to clipboard");
+              }}
+            >
+              Buy me a cup of coffee
+            </a>{" "}
+            :)
+          </p>
+          <p style={{ fontSize: "14px", opacity: "0.5", marginTop: "14px" }}>
+            {versionAndDate}
+          </p>
+        </div>
       </div>
     </div>
   );
