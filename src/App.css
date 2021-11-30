@@ -8,18 +8,19 @@
 }
 html {
   background: rgb(40, 41, 56);
-  overscroll-behavior: contain;
-  height: 100%;
 }
+
+html,
 body,
-#root {
+#root,
+.App {
   height: 100%;
+  overscroll-behavior-y: contain;
 }
 
 .App {
   display: grid;
   place-items: center;
-  height: 100%;
 }
 
 .container {

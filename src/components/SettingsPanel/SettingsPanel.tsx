@@ -3,7 +3,7 @@ import { flaggingModes } from "../../types/settings";
 import "./SettingsPanel.css";
 import difficulties from "../../utilities/difficulties";
 
-const versionAndDate = "v1.6.1 (30/11/2021)";
+const versionAndDate = "v1.6.1.1 (30/11/2021)";
 
 interface SettingsPanelProps {
   flaggingMode: flaggingModes;
@@ -58,7 +58,7 @@ export default function SettingsPanel({
   return (
     <div
       style={{
-        position: "absolute",
+        position: "fixed",
         height: "100%",
         width: "100vw",
         backgroundColor: "#00000088",
