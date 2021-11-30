@@ -2,7 +2,7 @@ import React from "react";
 import { flaggingModes } from "../../types/settings";
 import "./SettingsPanel.css";
 
-const versionAndDate = "v1.5.1 (30/11/2021)";
+const versionAndDate = "v1.5.1.1 (30/11/2021)";
 
 interface SettingsPanelProps {
   flaggingMode: flaggingModes;
