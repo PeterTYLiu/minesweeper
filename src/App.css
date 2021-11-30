@@ -6,19 +6,24 @@
   margin: 0px;
   box-sizing: border-box;
 }
-body {
+html {
   background: rgb(40, 41, 56);
   overscroll-behavior: contain;
+  height: 100%;
+}
+body,
+#root {
+  height: 100%;
 }
 
 .App {
   display: grid;
   place-items: center;
-  height: calc(100vh - 110px);
+  height: 100%;
 }
 
 .container {
-  padding: 12px;
+  padding: 10px;
 }
 
 .controls {

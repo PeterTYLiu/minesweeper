@@ -91,8 +91,8 @@ function App() {
   }
 
   // Game state
-  let [defaultBoardState, setDefaultBoardState] = useState(
-    generateNewBoardState()
+  const [defaultBoardState, setDefaultBoardState] = useState(
+    generateNewBoardState(numOfColumns, numOfRows, mineRatio)
   );
 
   const [gameStatus, setGameStatus] = useState<gameStatuses>("preGame");
@@ -243,7 +243,7 @@ function App() {
             e.preventDefault();
           }}
         >
-          {board.map((innerTile) => {
+          {defaultBoardState.map((innerTile) => {
             if (innerTile.r === i / numOfColumns + 1) {
               return (
                 <div
