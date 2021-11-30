@@ -5,53 +5,51 @@ import ITile from "../../types/tile";
 import { gameStatuses } from "../../types/gameStatuses";
 import { flaggingModes } from "../../types/settings";
 
-interface TileProps extends ITile {
-  tilesRemaining: number;
-  setTilesRemaining(arg0: number): any;
+interface TileProps {
+  tile: ITile;
   floodFill(triggerTile: ITile, boardState: ITile[]): any;
   boardState: ITile[];
   setBoardState(arg0: ITile[]): any;
-  loseGame(id: number): any;
+  loseGame(arrOfIds: number[]): any;
   gameStatus: gameStatuses;
   flaggingMode: flaggingModes;
+  chord(triggerTile: ITile, boardState: ITile[]): any;
+  chordingEnabled: boolean;
 }
 
 export default function Tile({
-  isMine,
-  minesAround,
-  swept,
-  setTilesRemaining,
-  tilesRemaining,
+  tile,
   floodFill,
   boardState,
   setBoardState,
-  id,
-  flagStatus,
   loseGame,
   gameStatus,
   flaggingMode,
+  chord,
+  chordingEnabled,
 }: TileProps) {
-  const toggleFlagStatus = () => {
+  const { swept, isMine, minesAround, flagStatus, id, c, r } = tile;
+
+  const handleContextOrSwipe = () => {
     if (!swept && flaggingMode === "withoutMaybe") {
       const newBoardState = [...boardState];
       newBoardState[id - 1].flagStatus =
         flagStatus === "flagged" ? "unflagged" : "flagged";
-      setBoardState(newBoardState);
+      return setBoardState(newBoardState);
+    }
+    if (chordingEnabled && swept && !isMine && minesAround) {
+      chord(tile, boardState);
     }
   };
 
   const handleClick = () => {
     if (flagStatus === "unflagged" && isMine && gameStatus === "inGame")
-      return loseGame(id);
+      return loseGame([id]);
     if (flagStatus === "unflagged" && !swept && gameStatus === "inGame") {
       const newBoardState = [...boardState];
       newBoardState[id - 1].swept = true;
-      setTilesRemaining(tilesRemaining - 1);
       if (minesAround === 0 && !isMine) {
         floodFill(newBoardState[id - 1], newBoardState);
-        setTilesRemaining(
-          newBoardState.filter((tile) => !tile.swept && !tile.isMine).length
-        );
       }
       setBoardState(newBoardState);
     }
@@ -59,7 +57,7 @@ export default function Tile({
 
   const swipeHandler = useSwipeable({
     onSwiped: () => {
-      toggleFlagStatus();
+      handleContextOrSwipe();
     },
   });
 
@@ -109,15 +107,49 @@ export default function Tile({
     </>
   );
 
+  const handleMouseDownOrTouchStart = (e: any) => {
+    if ((e.type === "touchstart" || e.button === 2) && swept && minesAround) {
+      let chordableTilesIds = [
+        boardState.find((tile) => tile.r === r && tile.c === c + 1),
+        boardState.find((tile) => tile.r === r && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
+      ]
+        .filter((tile) => !tile?.swept && tile?.flagStatus === "unflagged")
+        .map((tile) => tile?.id);
+      chordableTilesIds.forEach((id) => {
+        document.querySelector(`.id-${id}`)?.classList.add("hover");
+      });
+    }
+  };
+
+  const handleMouseUpOrTouchEnd = () => {
+    if (chordingEnabled && swept && minesAround) {
+      const artificiallyHoveredTiles = document.querySelectorAll(".hover");
+      artificiallyHoveredTiles.forEach((tile) =>
+        tile.classList.remove("hover")
+      );
+    }
+  };
+
   return (
     <div
+      onMouseDown={(e) => handleMouseDownOrTouchStart(e)}
+      onTouchStart={(e) => handleMouseDownOrTouchStart(e)}
+      onMouseUp={handleMouseUpOrTouchEnd}
+      onTouchEnd={handleMouseUpOrTouchEnd}
+      onMouseLeave={handleMouseUpOrTouchEnd}
       {...swipeHandler}
       className={`tile id-${id} ${isMine ? "mine" : ""} ${
         swept ? "swept" : ""
       } around-${minesAround}`}
       onContextMenu={(e) => {
         e.preventDefault();
-        toggleFlagStatus();
+        handleContextOrSwipe();
       }}
       onClick={handleClick}
     >

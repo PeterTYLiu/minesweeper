@@ -2,7 +2,7 @@ import React from "react";
 import { flaggingModes } from "../../types/settings";
 import "./SettingsPanel.css";
 
-const versionAndDate = "v1.4.3 (28/11/2021)";
+const versionAndDate = "v1.5 (28/11/2021)";
 
 interface SettingsPanelProps {
   flaggingMode: flaggingModes;
@@ -10,6 +10,8 @@ interface SettingsPanelProps {
   setSettingsPanelVisible(visibility: boolean): any;
   setNumOfMines(numOfMines: number): any;
   numOfMines: number;
+  chordingEnabled: boolean;
+  setChordingEnabled(arg: boolean): any;
 }
 
 export default function SettingsPanel({
@@ -18,6 +20,8 @@ export default function SettingsPanel({
   setSettingsPanelVisible,
   setNumOfMines,
   numOfMines,
+  chordingEnabled,
+  setChordingEnabled,
 }: SettingsPanelProps) {
   const handleChangeFlaggingMode = () => {
     let newFlaggingMode = (
@@ -25,6 +29,17 @@ export default function SettingsPanel({
     ) as flaggingModes;
     setFlaggingMode(newFlaggingMode);
     localStorage.setItem("flaggingMode", newFlaggingMode);
+  };
+
+  const handleChangeChordingEnabled = () => {
+    if (chordingEnabled) {
+      setChordingEnabled(false);
+      localStorage.setItem("chordingEnabled", "false");
+    }
+    if (!chordingEnabled) {
+      setChordingEnabled(true);
+      localStorage.setItem("chordingEnabled", "true");
+    }
   };
 
   let showPWAHint = true;
@@ -136,6 +151,28 @@ export default function SettingsPanel({
           <div>
             <h3>Flagging</h3>
             <p>Swipe or right-click a tile to flag it</p>
+          </div>
+        </label>
+
+        <hr />
+        <label>
+          <input
+            type="checkbox"
+            checked={chordingEnabled}
+            onChange={handleChangeChordingEnabled}
+            disabled={flaggingMode === "off" ? true : false}
+            title={
+              flaggingMode === "off"
+                ? "Requires flagging to be enabled"
+                : undefined
+            }
+          />
+          <div>
+            <h3>Chording</h3>
+            <p>
+              Swipe or right-click a swept tile to sweep all adjacent tiles (if
+              the right number of adjacent mines have been flagged).
+            </p>
           </div>
         </label>
 

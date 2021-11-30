@@ -7,6 +7,8 @@ import "./App.css";
 import ITile from "./types/tile";
 import { gameStatuses } from "./types/gameStatuses";
 import { flaggingModes } from "./types/settings";
+// UTility functions
+import floodFill from "./utilities/floodFill";
 
 function App() {
   //defaults
@@ -23,7 +25,19 @@ function App() {
   const [flaggingMode, setFlaggingMode] = useState<flaggingModes>(
     (localStorage.getItem("flaggingMode") as flaggingModes) || "withoutMaybe"
   );
-  let numOfRemainingTiles = numOfRows * numOfColumns - numOfMines;
+  const [chordingEnabled, setChordingEnabled] = useState(
+    localStorage.getItem("chordingEnabled")
+      ? (JSON.parse(
+          localStorage.getItem("chordingEnabled") as string
+        ) as boolean)
+      : true
+  );
+
+  // If no flagging, disable chording
+
+  useEffect(() => {
+    if (flaggingMode === "off") setChordingEnabled(false);
+  }, [flaggingMode]);
 
   // Utility functions
 
@@ -71,31 +85,9 @@ function App() {
     return boardState;
   }
 
-  function floodFill(triggerTile: ITile, boardState: ITile[]) {
-    const { r, c } = triggerTile;
-    let tilesAround = [
-      boardState.find((tile) => tile.r === r && tile.c === c + 1),
-      boardState.find((tile) => tile.r === r && tile.c === c - 1),
-      boardState.find((tile) => tile.r === r + 1 && tile.c === c),
-      boardState.find((tile) => tile.r === r - 1 && tile.c === c),
-      boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
-      boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
-      boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
-      boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
-    ].filter((tile) => tile?.id && !tile?.swept);
-    tilesAround.forEach((tile) => {
-      if (tile && tile.flagStatus === "unflagged")
-        boardState[tile.id - 1].swept = true;
-      if (tile?.minesAround === 0 && tilesAround.length > 0) {
-        floodFill(tile, boardState);
-      }
-    });
-  }
-
   // Game state
   const defaultBoardState = generateNewBoardState();
 
-  const [tilesRemaining, setTilesRemaining] = useState(numOfRemainingTiles);
   const [gameStatus, setGameStatus] = useState<gameStatuses>("preGame");
   const [board, setBoard] = useState<ITile[]>(defaultBoardState);
   const [message, setMessage] = useState(
@@ -119,9 +111,18 @@ function App() {
     );
   }, [numOfMines]);
 
+  // Win the game when all the tiles have been cleared
+
   useEffect(() => {
-    if (tilesRemaining === 0) winGame();
-  }, [tilesRemaining]);
+    if (
+      gameStatus === "inGame" &&
+      board.filter((tile) => tile.swept).length ===
+        numOfRows * numOfColumns - numOfMines
+    )
+      winGame();
+  }, [board]);
+
+  // Game functions
 
   const startGame = (tileId: number) => {
     let newBoardState = generateNewBoardState();
@@ -135,9 +136,6 @@ function App() {
     newBoardState[tileId - 1].swept = true;
 
     floodFill(newBoardState[tileId - 1], newBoardState);
-    setTilesRemaining(
-      newBoardState.filter((tile) => !tile.swept && !tile.isMine).length
-    );
     setBoard(newBoardState);
     setGameStatus("inGame");
   };
@@ -146,21 +144,22 @@ function App() {
     setGameStatus("wonGame");
   };
 
-  const loseGame = (id: number) => {
+  function loseGame(arrOfIds: number[]) {
     setGameStatus("lostGame");
-    document
-      .querySelector(`.id-${id}`)
-      ?.setAttribute("style", "background: red");
+    arrOfIds.forEach((id) => {
+      document
+        .querySelector(`.id-${id}`)
+        ?.setAttribute("style", "background: red");
+    });
     let newBoardState = [...board];
     for (let t = 0; t < newBoardState.length; t++) {
       if (newBoardState[t].isMine) newBoardState[t].swept = true;
     }
     setBoard(newBoardState);
-  };
+  }
 
   const prepNewGame = () => {
     setBoard(defaultBoardState);
-    setTilesRemaining(numOfRemainingTiles);
     setGameStatus("preGame");
     setMessage(
       localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
@@ -172,6 +171,56 @@ function App() {
         : "🏆 none"
     );
   };
+
+  const chord = (triggerTile: ITile, boardState: ITile[]) => {
+    let newBoardState = [...boardState];
+    const { r, c, minesAround } = triggerTile;
+
+    let numOfAdjacentFlaggedTiles = [
+      newBoardState.find((tile) => tile.r === r && tile.c === c + 1),
+      newBoardState.find((tile) => tile.r === r && tile.c === c - 1),
+      newBoardState.find((tile) => tile.r === r + 1 && tile.c === c),
+      newBoardState.find((tile) => tile.r === r - 1 && tile.c === c),
+      newBoardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+      newBoardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+      newBoardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+      newBoardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
+    ].filter((tile) => tile?.flagStatus === "flagged").length;
+
+    if (minesAround !== numOfAdjacentFlaggedTiles) return;
+
+    // Chording is a go-go!
+
+    let tilesToSweep = [
+      newBoardState.find((tile) => tile.r === r && tile.c === c + 1),
+      newBoardState.find((tile) => tile.r === r && tile.c === c - 1),
+      newBoardState.find((tile) => tile.r === r + 1 && tile.c === c),
+      newBoardState.find((tile) => tile.r === r - 1 && tile.c === c),
+      newBoardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+      newBoardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+      newBoardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+      newBoardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
+    ].filter((tile) => !tile?.swept && tile?.flagStatus === "unflagged");
+
+    let minesSwept = tilesToSweep
+      .filter((tile) => tile?.isMine)
+      .map((tile) => tile?.id);
+
+    if (minesSwept.length) return loseGame(minesSwept as number[]);
+
+    tilesToSweep.forEach((tile) => {
+      if (tile) {
+        tile.swept = true;
+      }
+      if (tile?.minesAround === 0) {
+        floodFill(tile, newBoardState);
+      }
+    });
+
+    setBoard(newBoardState);
+  };
+
+  // Board UI
 
   const PreGameTiles = defaultBoardState.map((tile, i) => {
     if (tile.c === 1) {
@@ -210,22 +259,16 @@ function App() {
             if (innerTile.r === i / numOfColumns + 1) {
               return (
                 <Tile
-                  minesAround={innerTile.minesAround}
-                  isMine={innerTile.isMine}
-                  setTilesRemaining={setTilesRemaining}
-                  tilesRemaining={tilesRemaining}
+                  tile={innerTile}
+                  chord={chord}
                   key={`r${innerTile.r}c${innerTile.c}`}
-                  swept={innerTile.swept}
-                  c={innerTile.c}
-                  r={innerTile.r}
                   boardState={board}
                   setBoardState={setBoard}
                   floodFill={floodFill}
-                  id={innerTile.id}
                   loseGame={loseGame}
                   gameStatus={gameStatus}
-                  flagStatus={innerTile.flagStatus}
                   flaggingMode={flaggingMode}
+                  chordingEnabled={chordingEnabled}
                 />
               );
             }
@@ -246,6 +289,8 @@ function App() {
           setSettingsPanelVisible={setSettingsPanelVisible}
           setNumOfMines={setNumOfMines}
           numOfMines={numOfMines}
+          chordingEnabled={chordingEnabled}
+          setChordingEnabled={setChordingEnabled}
         />
       )}
       <div className="container">

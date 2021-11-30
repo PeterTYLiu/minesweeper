@@ -73,6 +73,7 @@ body {
   border-bottom: var(--unswept-border-width) solid rgb(0, 0, 0, 0.4);
 }
 
+.tile.hover,
 .tile:hover:not(.swept) {
   background: rgb(94, 198, 230);
 }
