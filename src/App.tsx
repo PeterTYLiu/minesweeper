@@ -12,25 +12,30 @@ import floodFill from "./utilities/floodFill";
 
 function App() {
   //defaults
-  let numOfRows = 20;
+  let defaultNumOfRows = 17;
   let numOfColumns = 10;
-  let defaultNumOfMines = 35;
+  let defaultMineRatio = 0.175;
   // Settings
+  const [numOfRows, setNumOfRows] = useState(
+    localStorage.getItem("numOfRows")
+      ? Number(localStorage.getItem("numOfRows"))
+      : defaultNumOfRows
+  );
   const [settingsPanelVisible, setSettingsPanelVisible] = useState(false);
-  const [numOfMines, setNumOfMines] = useState(
-    localStorage.getItem("numOfMines")
-      ? Number(localStorage.getItem("numOfMines"))
-      : defaultNumOfMines
+  const [mineRatio, setMineRatio] = useState(
+    localStorage.getItem("mineRatio")
+      ? Number(localStorage.getItem("mineRatio"))
+      : defaultMineRatio
   );
   const [flaggingMode, setFlaggingMode] = useState<flaggingModes>(
-    (localStorage.getItem("flaggingMode") as flaggingModes) || "withoutMaybe"
+    (localStorage.getItem("flaggingMode") as flaggingModes) || "off"
   );
   const [chordingEnabled, setChordingEnabled] = useState(
     localStorage.getItem("chordingEnabled")
       ? (JSON.parse(
           localStorage.getItem("chordingEnabled") as string
         ) as boolean)
-      : true
+      : false
   );
 
   // If no flagging, disable chording
@@ -44,7 +49,7 @@ function App() {
   function generateNewBoardState(
     columns = numOfColumns,
     rows = numOfRows,
-    mines = numOfMines
+    minePercentage = mineRatio
   ) {
     let boardState: ITile[] = [];
     for (let r = 1; r <= rows; r++) {
@@ -60,7 +65,7 @@ function App() {
         });
       }
     }
-    let minesToPlace = mines;
+    let minesToPlace = Math.round(columns * rows * minePercentage);
     while (minesToPlace > 0) {
       let index = Math.floor(Math.random() * rows * columns);
       if (!boardState[index].isMine) {
@@ -86,14 +91,16 @@ function App() {
   }
 
   // Game state
-  const defaultBoardState = generateNewBoardState();
+  let [defaultBoardState, setDefaultBoardState] = useState(
+    generateNewBoardState()
+  );
 
   const [gameStatus, setGameStatus] = useState<gameStatuses>("preGame");
   const [board, setBoard] = useState<ITile[]>(defaultBoardState);
   const [message, setMessage] = useState(
-    localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
+    localStorage.getItem(`${numOfColumns}x${numOfRows}x${mineRatio}m`)
       ? `🏆 ${
-          localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`) +
+          localStorage.getItem(`${numOfColumns}x${numOfRows}x${mineRatio}m`) +
           "s"
         }`
       : "🏆 none"
@@ -101,15 +108,20 @@ function App() {
 
   useEffect(() => {
     setMessage(
-      localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
+      localStorage.getItem(`${numOfColumns}x${numOfRows}x${mineRatio}m`)
         ? `🏆 ${
-            localStorage.getItem(
-              `${numOfColumns}x${numOfRows}x${numOfMines}m`
-            ) + "s"
+            localStorage.getItem(`${numOfColumns}x${numOfRows}x${mineRatio}m`) +
+            "s"
           }`
         : "🏆 none"
     );
-  }, [numOfMines]);
+  }, [mineRatio, numOfRows]);
+
+  // Update initial board when rows change
+
+  useEffect(() => {
+    setDefaultBoardState(generateNewBoardState());
+  }, [numOfRows]);
 
   // Win the game when all the tiles have been cleared
 
@@ -117,7 +129,8 @@ function App() {
     if (
       gameStatus === "inGame" &&
       board.filter((tile) => tile.swept).length ===
-        numOfRows * numOfColumns - numOfMines
+        numOfRows * numOfColumns -
+          Math.round(numOfColumns * numOfRows * mineRatio)
     )
       winGame();
   }, [board]);
@@ -162,11 +175,10 @@ function App() {
     setBoard(defaultBoardState);
     setGameStatus("preGame");
     setMessage(
-      localStorage.getItem(`${numOfColumns}x${numOfRows}x${numOfMines}m`)
+      localStorage.getItem(`${numOfColumns}x${numOfRows}x${mineRatio}m`)
         ? `🏆 ${
-            localStorage.getItem(
-              `${numOfColumns}x${numOfRows}x${numOfMines}m`
-            ) + "s"
+            localStorage.getItem(`${numOfColumns}x${numOfRows}x${mineRatio}m`) +
+            "s"
           }`
         : "🏆 none"
     );
@@ -287,10 +299,12 @@ function App() {
           flaggingMode={flaggingMode}
           setFlaggingMode={setFlaggingMode}
           setSettingsPanelVisible={setSettingsPanelVisible}
-          setNumOfMines={setNumOfMines}
-          numOfMines={numOfMines}
+          setMineRatio={setMineRatio}
+          mineRatio={mineRatio}
           chordingEnabled={chordingEnabled}
           setChordingEnabled={setChordingEnabled}
+          numOfRows={numOfRows}
+          setNumOfRows={setNumOfRows}
         />
       )}
       <div className="container">
@@ -310,8 +324,8 @@ function App() {
           {gameStatus === "inGame" && (
             <span style={{ width: "auto" }}>
               💣{" "}
-              {numOfMines -
-                board.filter((tile) => tile.flagStatus == "flagged").length}
+              {Math.round(numOfColumns * numOfRows * mineRatio) -
+                board.filter((tile) => tile.flagStatus === "flagged").length}
             </span>
           )}
           {gameStatus === "preGame" && (
@@ -329,7 +343,7 @@ function App() {
             <Timer
               gameStatus={gameStatus}
               setMessage={setMessage}
-              currentFormat={`${numOfColumns}x${numOfRows}x${numOfMines}m`}
+              currentFormat={`${numOfColumns}x${numOfRows}x${mineRatio}m`}
             />
           </span>
         </div>

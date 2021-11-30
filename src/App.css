@@ -14,7 +14,11 @@ body {
 .App {
   display: grid;
   place-items: center;
-  height: 100vh;
+  height: calc(100vh - 110px);
+}
+
+.container {
+  padding: 12px;
 }
 
 .controls {
@@ -136,5 +140,5 @@ body {
   }
 }
 .flagged {
-  animation: plantFlag 0.08s ease-in;
+  animation: plantFlag 0.07s ease-in;
 }

@@ -108,7 +108,12 @@ export default function Tile({
   );
 
   const handleMouseDownOrTouchStart = (e: any) => {
-    if ((e.type === "touchstart" || e.button === 2) && swept && minesAround) {
+    if (
+      (e.type === "touchstart" || e.button === 2) &&
+      swept &&
+      minesAround &&
+      chordingEnabled
+    ) {
       let chordableTilesIds = [
         boardState.find((tile) => tile.r === r && tile.c === c + 1),
         boardState.find((tile) => tile.r === r && tile.c === c - 1),

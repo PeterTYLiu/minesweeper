@@ -1,27 +1,32 @@
 import React from "react";
 import { flaggingModes } from "../../types/settings";
 import "./SettingsPanel.css";
+import difficulties from "../../utilities/difficulties";
 
-const versionAndDate = "v1.5.1.5 (30/11/2021)";
+const versionAndDate = "v1.6 (30/11/2021)";
 
 interface SettingsPanelProps {
   flaggingMode: flaggingModes;
   setFlaggingMode(flaggingMode: flaggingModes): any;
   setSettingsPanelVisible(visibility: boolean): any;
-  setNumOfMines(numOfMines: number): any;
-  numOfMines: number;
+  setMineRatio(numOfMines: number): any;
+  mineRatio: number;
   chordingEnabled: boolean;
-  setChordingEnabled(arg: boolean): any;
+  setChordingEnabled(chording: boolean): any;
+  numOfRows: number;
+  setNumOfRows(rows: number): any;
 }
 
 export default function SettingsPanel({
   flaggingMode,
   setFlaggingMode,
   setSettingsPanelVisible,
-  setNumOfMines,
-  numOfMines,
+  setMineRatio,
+  mineRatio,
   chordingEnabled,
   setChordingEnabled,
+  numOfRows,
+  setNumOfRows,
 }: SettingsPanelProps) {
   const handleChangeFlaggingMode = () => {
     let newFlaggingMode = (
@@ -70,8 +75,8 @@ export default function SettingsPanel({
           flexDirection: "column",
           gap: "20px",
           background: "white",
-          maxWidth: "350px",
-          width: "90%",
+          maxWidth: "370px",
+          width: "92%",
           borderRadius: "4px",
           padding: "24px",
         }}
@@ -100,45 +105,109 @@ export default function SettingsPanel({
         </div>
         <hr />
         <div>
-          <div className="difficulty-selector">
+          <div className="selector">
             <div
-              className={numOfMines === 20 ? "selected" : undefined}
+              className={numOfRows === 17 ? "selected" : undefined}
               onClick={() => {
-                setNumOfMines(20);
-                localStorage.setItem("numOfMines", "20");
+                setNumOfRows(17);
+                localStorage.setItem("numOfRows", "17");
+              }}
+            >
+              <h3>17{numOfRows === 17 && " rows"}</h3>
+            </div>
+            <div
+              className={numOfRows === 18 ? "selected" : undefined}
+              onClick={() => {
+                setNumOfRows(18);
+                localStorage.setItem("numOfRows", "18");
+              }}
+            >
+              <h3>18{numOfRows === 18 && " rows"}</h3>
+            </div>
+            <div
+              className={numOfRows === 19 ? "selected" : undefined}
+              onClick={() => {
+                setNumOfRows(19);
+                localStorage.setItem("numOfRows", "19");
+              }}
+            >
+              <h3>19{numOfRows === 19 && " rows"}</h3>
+            </div>
+            <div
+              className={numOfRows === 20 ? "selected" : undefined}
+              onClick={() => {
+                setNumOfRows(20);
+                localStorage.setItem("numOfRows", "20");
+              }}
+            >
+              <h3>20{numOfRows === 20 && " rows"}</h3>
+            </div>
+          </div>
+          <div className="selector">
+            <div
+              className={
+                mineRatio === difficulties.easy.mineRatio
+                  ? "selected"
+                  : undefined
+              }
+              onClick={() => {
+                setMineRatio(difficulties.easy.mineRatio);
+                localStorage.setItem(
+                  "mineRatio",
+                  difficulties.easy.mineRatio.toString()
+                );
               }}
             >
               <h3>Easy</h3>
-              <p>20 mines</p>
+              <p>10% mines</p>
             </div>
             <div
-              className={numOfMines === 35 ? "selected" : undefined}
+              className={
+                mineRatio === difficulties.medium.mineRatio
+                  ? "selected"
+                  : undefined
+              }
               onClick={() => {
-                setNumOfMines(35);
-                localStorage.setItem("numOfMines", "35");
+                setMineRatio(difficulties.medium.mineRatio);
+                localStorage.setItem(
+                  "mineRatio",
+                  difficulties.medium.mineRatio.toString()
+                );
               }}
             >
               <h3>Medium</h3>
-              <p>35 mines</p>
+              <p>17% mines</p>
             </div>
             <div
-              className={numOfMines === 50 ? "selected" : undefined}
+              className={
+                mineRatio === difficulties.hard.mineRatio
+                  ? "selected"
+                  : undefined
+              }
               onClick={() => {
-                setNumOfMines(50);
-                localStorage.setItem("numOfMines", "50");
+                setMineRatio(difficulties.hard.mineRatio);
+                localStorage.setItem(
+                  "mineRatio",
+                  difficulties.hard.mineRatio.toString()
+                );
               }}
             >
               <h3>Hard</h3>
-              <p>50 mines</p>
+              <p>25% mines</p>
             </div>
           </div>
           <p>
-            Best time on {numOfMines === 50 && "hard"}
-            {numOfMines === 35 && "medium"}
-            {numOfMines === 20 && "easy"}:{" "}
-            {localStorage.getItem(`10x20x${numOfMines}m`)
-              ? "🏆 " + localStorage.getItem(`10x20x${numOfMines}m`) + "s"
-              : "none"}
+            Best time on {numOfRows} rows &amp;{" "}
+            {mineRatio === difficulties.hard.mineRatio && "hard"}
+            {mineRatio === difficulties.medium.mineRatio && "medium"}
+            {mineRatio === difficulties.easy.mineRatio && "easy"}:{" "}
+            {localStorage.getItem(`10x${numOfRows}x${mineRatio}m`) ? (
+              <strong>
+                {localStorage.getItem(`10x${numOfRows}x${mineRatio}m`) + "s"}
+              </strong>
+            ) : (
+              "none"
+            )}
           </p>
         </div>
         <hr />
