@@ -1,7 +1,7 @@
 {
-  "short_name": "Minesweeper",
-  "name": "Peter's Minesweeper",
-  "description": "A minesweeper game made with react",
+  "short_name": "STMines",
+  "name": "Sweep Those Mines",
+  "description": "No ads, no signup, just minesweeper",
   "icons": [
     {
       "src": "./logo.png",
@@ -14,10 +14,10 @@
   "related_applications": [
     {
       "platform": "webapp",
-      "url": "https://petertyliu.github.io/minesweeper/manifest.webmanifest"
+      "url": "https://www.sweepthosemines.com/manifest.webmanifest"
     }
   ],
   "display": "fullscreen",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1d91b4",
+  "background_color": "#282938"
 }
