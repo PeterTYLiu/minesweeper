@@ -1,6 +1,6 @@
 {
   "name": "minesweeper",
-  "homepage": "https://www.sweepthosemines.com",
+  "homepage": "https://petertyliu.github.io/minesweeper",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
