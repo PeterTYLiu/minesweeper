@@ -3,7 +3,7 @@ import { flaggingModes } from "../../types/settings";
 import "./SettingsPanel.css";
 import difficulties from "../../utilities/difficulties";
 
-const versionAndDate = "v1.6.1.1 (30/11/2021)";
+const versionAndDate = "v1.6.1.2 (30/11/2021)";
 
 interface SettingsPanelProps {
   flaggingMode: flaggingModes;
