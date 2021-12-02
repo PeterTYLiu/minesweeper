@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
+import "./App.css";
+// Components
 import Tile from "./components/Tile";
 import Timer from "./components/Timer";
 import SettingsPanel from "./components/SettingsPanel";
-import "./App.css";
+import Instructions from "./components/Instructions";
+import NewRecord from "./components/NewRecord";
 // Typescript
 import ITile from "./types/tile";
 import { gameStatuses } from "./types/gameStatuses";
-import { flaggingModes } from "./types/settings";
+import { onOff } from "./types/settings";
 // UTility functions
 import floodFill from "./utilities/floodFill";
 
@@ -21,28 +24,21 @@ function App() {
       ? Number(localStorage.getItem("numOfRows"))
       : defaultNumOfRows
   );
-  const [settingsPanelVisible, setSettingsPanelVisible] = useState(false);
   const [mineRatio, setMineRatio] = useState(
     localStorage.getItem("mineRatio")
       ? Number(localStorage.getItem("mineRatio"))
       : defaultMineRatio
   );
-  const [flaggingMode, setFlaggingMode] = useState<flaggingModes>(
-    (localStorage.getItem("flaggingMode") as flaggingModes) || "off"
+  const [swipeToFlag, setSwipeToFlag] = useState<onOff>(
+    localStorage.getItem("swipeToFlag")
+      ? (localStorage.getItem("swipeToFlag") as onOff)
+      : "off"
   );
-  const [chordingEnabled, setChordingEnabled] = useState(
-    localStorage.getItem("chordingEnabled")
-      ? (JSON.parse(
-          localStorage.getItem("chordingEnabled") as string
-        ) as boolean)
-      : false
+  const [swipeToChord, setSwipeToChord] = useState<onOff>(
+    localStorage.getItem("swipeToChord")
+      ? (localStorage.getItem("swipeToChord") as onOff)
+      : "off"
   );
-
-  // If no flagging, disable chording
-
-  useEffect(() => {
-    if (flaggingMode === "off") setChordingEnabled(false);
-  }, [flaggingMode]);
 
   // Utility functions
 
@@ -91,6 +87,11 @@ function App() {
   }
 
   // Game state
+  const [newRecordOpen, setNewRecordOpen] = useState(false);
+  const [oldAndNewRecords, setOldAndNewRecords] = useState<{
+    old: number | undefined;
+    new: number;
+  }>({ old: 0, new: 0 });
   const [defaultBoardState, setDefaultBoardState] = useState(
     generateNewBoardState(numOfColumns, numOfRows, mineRatio)
   );
@@ -162,7 +163,7 @@ function App() {
     arrOfIds.forEach((id) => {
       document
         .querySelector(`.id-${id}`)
-        ?.setAttribute("style", "background: red");
+        ?.setAttribute("style", "background: #d00");
     });
     let newBoardState = [...board];
     for (let t = 0; t < newBoardState.length; t++) {
@@ -232,6 +233,12 @@ function App() {
     setBoard(newBoardState);
   };
 
+  // Reset the board if board size changes
+
+  useEffect(() => {
+    prepNewGame();
+  }, [numOfRows]);
+
   // Board UI
 
   const PreGameTiles = defaultBoardState.map((tile, i) => {
@@ -279,8 +286,8 @@ function App() {
                   floodFill={floodFill}
                   loseGame={loseGame}
                   gameStatus={gameStatus}
-                  flaggingMode={flaggingMode}
-                  chordingEnabled={chordingEnabled}
+                  swipeToChord={swipeToChord}
+                  swipeToFlag={swipeToFlag}
                 />
               );
             }
@@ -294,22 +301,28 @@ function App() {
 
   return (
     <div className="App">
-      {settingsPanelVisible && (
-        <SettingsPanel
-          flaggingMode={flaggingMode}
-          setFlaggingMode={setFlaggingMode}
-          setSettingsPanelVisible={setSettingsPanelVisible}
-          setMineRatio={setMineRatio}
-          mineRatio={mineRatio}
-          chordingEnabled={chordingEnabled}
-          setChordingEnabled={setChordingEnabled}
-          numOfRows={numOfRows}
-          setNumOfRows={setNumOfRows}
-        />
-      )}
+      <NewRecord
+        oldAndNewRecords={oldAndNewRecords}
+        numOfRows={numOfRows}
+        mineRatio={mineRatio}
+        newRecordOpen={newRecordOpen}
+        setNewRecordOpen={setNewRecordOpen}
+      />
       <div className="container">
         <div className="controls">
-          <span>{message}</span>
+          <div className="dark-bg">
+            {gameStatus === "preGame" ? (
+              message
+            ) : (
+              <Timer
+                gameStatus={gameStatus}
+                setMessage={setMessage}
+                currentFormat={`${numOfColumns}x${numOfRows}x${mineRatio}m`}
+                setNewRecordOpen={setNewRecordOpen}
+                setOldAndNewRecords={setOldAndNewRecords}
+              />
+            )}
+          </div>
 
           {gameStatus === "wonGame" && (
             <div className="ms-button" onClick={prepNewGame}>
@@ -321,33 +334,35 @@ function App() {
               {"😬"}
             </div>
           )}
-          {gameStatus === "inGame" && (
-            <span style={{ width: "auto" }}>
-              💣{" "}
-              {Math.round(numOfColumns * numOfRows * mineRatio) -
-                board.filter((tile) => tile.flagStatus === "flagged").length}
-            </span>
-          )}
-          {gameStatus === "preGame" && (
-            <div
-              className="ms-button"
-              onClick={() => {
-                setSettingsPanelVisible(true);
-              }}
-            >
-              {"⚙️"}
-            </div>
-          )}
 
-          <span style={{ textAlign: "right" }}>
-            <Timer
-              gameStatus={gameStatus}
-              setMessage={setMessage}
-              currentFormat={`${numOfColumns}x${numOfRows}x${mineRatio}m`}
-            />
-          </span>
+          <div>
+            {gameStatus === "inGame" ? (
+              <div className="dark-bg">
+                {`💣 
+              ${
+                Math.round(numOfColumns * numOfRows * mineRatio) -
+                board.filter((tile) => tile.flagStatus === "flagged").length
+              }`}
+              </div>
+            ) : (
+              <>
+                <Instructions />
+                <SettingsPanel
+                  swipeToFlag={swipeToFlag}
+                  setSwipeToFlag={setSwipeToFlag}
+                  swipeToChord={swipeToChord}
+                  setSwipeToChord={setSwipeToChord}
+                  setMineRatio={setMineRatio}
+                  mineRatio={mineRatio}
+                  numOfRows={numOfRows}
+                  setNumOfRows={setNumOfRows}
+                />
+              </>
+            )}
+          </div>
         </div>
         <div
+          onContextMenu={(e) => e.preventDefault()}
           className={`board ${
             (gameStatus === "lostGame" || gameStatus === "wonGame") &&
             "postGame"

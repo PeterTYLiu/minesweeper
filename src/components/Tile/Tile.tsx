@@ -3,7 +3,7 @@ import { useSwipeable } from "react-swipeable";
 // Typescript
 import ITile from "../../types/tile";
 import { gameStatuses } from "../../types/gameStatuses";
-import { flaggingModes } from "../../types/settings";
+import { onOff } from "../../types/settings";
 
 interface TileProps {
   tile: ITile;
@@ -12,9 +12,9 @@ interface TileProps {
   setBoardState(arg0: ITile[]): any;
   loseGame(arrOfIds: number[]): any;
   gameStatus: gameStatuses;
-  flaggingMode: flaggingModes;
   chord(triggerTile: ITile, boardState: ITile[]): any;
-  chordingEnabled: boolean;
+  swipeToFlag: onOff;
+  swipeToChord: onOff;
 }
 
 export default function Tile({
@@ -24,20 +24,26 @@ export default function Tile({
   setBoardState,
   loseGame,
   gameStatus,
-  flaggingMode,
+  swipeToChord,
   chord,
-  chordingEnabled,
+  swipeToFlag,
 }: TileProps) {
   const { swept, isMine, minesAround, flagStatus, id, c, r } = tile;
 
-  const handleContextOrSwipe = () => {
-    if (!swept && flaggingMode === "withoutMaybe") {
+  const handleContextMenu = () => {
+    if (!swept) {
       const newBoardState = [...boardState];
       newBoardState[id - 1].flagStatus =
         flagStatus === "flagged" ? "unflagged" : "flagged";
       return setBoardState(newBoardState);
     }
-    if (chordingEnabled && swept && !isMine && minesAround) {
+    if (swept && !isMine && minesAround) {
+      chord(tile, boardState);
+    }
+  };
+
+  const handleDoubleClick = () => {
+    if (swept && !isMine && minesAround) {
       chord(tile, boardState);
     }
   };
@@ -55,9 +61,70 @@ export default function Tile({
     }
   };
 
+  // const handleMouseDownOrTouchStart = (e: any) => {
+  //   if (
+  //     (e.type === "touchstart" || e.button === 2) &&
+  //     swept &&
+  //     minesAround &&
+  //     chordingEnabled
+  //   ) {
+  //     let chordableTilesIds = [
+  //       boardState.find((tile) => tile.r === r && tile.c === c + 1),
+  //       boardState.find((tile) => tile.r === r && tile.c === c - 1),
+  //       boardState.find((tile) => tile.r === r + 1 && tile.c === c),
+  //       boardState.find((tile) => tile.r === r - 1 && tile.c === c),
+  //       boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+  //       boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+  //       boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+  //       boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
+  //     ]
+  //       .filter((tile) => !tile?.swept && tile?.flagStatus === "unflagged")
+  //       .map((tile) => tile?.id);
+  //     chordableTilesIds.forEach((id) => {
+  //       document.querySelector(`.id-${id}`)?.classList.add("hover");
+  //     });
+  //   }
+  // };
+
+  const highlightTilesToChord = () => {
+    if (swept && minesAround) {
+      let chordableTilesIds = [
+        boardState.find((tile) => tile.r === r && tile.c === c + 1),
+        boardState.find((tile) => tile.r === r && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
+        boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
+      ]
+        .filter((tile) => !tile?.swept && tile?.flagStatus === "unflagged")
+        .map((tile) => tile?.id);
+      chordableTilesIds.forEach((id) => {
+        document.querySelector(`.id-${id}`)?.classList.add("hover");
+      });
+    }
+  };
+
+  const unhighlightTilesToChord = () => {
+    if (swept && minesAround && !isMine) {
+      const artificiallyHoveredTiles = document.querySelectorAll(".hover");
+      artificiallyHoveredTiles.forEach((tile) =>
+        tile.classList.remove("hover")
+      );
+    }
+  };
+
   const swipeHandler = useSwipeable({
     onSwiped: () => {
-      handleContextOrSwipe();
+      if (swipeToChord === "on" && swept && !isMine && minesAround) {
+        chord(tile, boardState);
+      } else if (swipeToFlag === "on" && !swept) {
+        const newBoardState = [...boardState];
+        newBoardState[id - 1].flagStatus =
+          flagStatus === "flagged" ? "unflagged" : "flagged";
+        return setBoardState(newBoardState);
+      }
     },
   });
 
@@ -107,54 +174,21 @@ export default function Tile({
     </>
   );
 
-  const handleMouseDownOrTouchStart = (e: any) => {
-    if (
-      (e.type === "touchstart" || e.button === 2) &&
-      swept &&
-      minesAround &&
-      chordingEnabled
-    ) {
-      let chordableTilesIds = [
-        boardState.find((tile) => tile.r === r && tile.c === c + 1),
-        boardState.find((tile) => tile.r === r && tile.c === c - 1),
-        boardState.find((tile) => tile.r === r + 1 && tile.c === c),
-        boardState.find((tile) => tile.r === r - 1 && tile.c === c),
-        boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
-        boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
-        boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
-        boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
-      ]
-        .filter((tile) => !tile?.swept && tile?.flagStatus === "unflagged")
-        .map((tile) => tile?.id);
-      chordableTilesIds.forEach((id) => {
-        document.querySelector(`.id-${id}`)?.classList.add("hover");
-      });
-    }
-  };
-
-  const handleMouseUpOrTouchEnd = () => {
-    if (chordingEnabled && swept && minesAround) {
-      const artificiallyHoveredTiles = document.querySelectorAll(".hover");
-      artificiallyHoveredTiles.forEach((tile) =>
-        tile.classList.remove("hover")
-      );
-    }
-  };
-
   return (
     <div
-      onMouseDown={(e) => handleMouseDownOrTouchStart(e)}
-      onTouchStart={(e) => handleMouseDownOrTouchStart(e)}
-      onMouseUp={handleMouseUpOrTouchEnd}
-      onTouchEnd={handleMouseUpOrTouchEnd}
-      onMouseLeave={handleMouseUpOrTouchEnd}
+      onMouseDown={highlightTilesToChord}
+      onTouchStart={highlightTilesToChord}
+      onMouseUp={unhighlightTilesToChord}
+      onTouchEnd={unhighlightTilesToChord}
+      onMouseLeave={unhighlightTilesToChord}
+      onDoubleClick={handleDoubleClick}
       {...swipeHandler}
       className={`tile id-${id} ${isMine ? "mine" : ""} ${
         swept ? "swept" : ""
       } around-${minesAround}`}
       onContextMenu={(e) => {
         e.preventDefault();
-        handleContextOrSwipe();
+        handleContextMenu();
       }}
       onClick={handleClick}
     >

@@ -1,0 +1,26 @@
+.instructions-section {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 1.2rem;
+}
+.instructions-section img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.got-it {
+  height: 42px;
+  border: none;
+  color: white;
+  background: rgb(156, 156, 156);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+.got-it:hover {
+  background: rgb(131, 131, 131);
+}

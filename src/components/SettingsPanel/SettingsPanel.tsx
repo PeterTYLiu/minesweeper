@@ -1,52 +1,40 @@
 import React from "react";
-import { flaggingModes } from "../../types/settings";
+import { onOff } from "../../types/settings";
 import "./SettingsPanel.css";
 import difficulties from "../../utilities/difficulties";
+import {
+  Root,
+  Trigger,
+  Overlay,
+  Content,
+  Title,
+  Close,
+} from "@radix-ui/react-dialog";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
-const versionAndDate = "v1.6.1.2 (30/11/2021)";
+const versionAndDate = "v2 (2/12/2021)";
 
 interface SettingsPanelProps {
-  flaggingMode: flaggingModes;
-  setFlaggingMode(flaggingMode: flaggingModes): any;
-  setSettingsPanelVisible(visibility: boolean): any;
+  swipeToFlag: onOff;
+  setSwipeToFlag(stf: onOff): any;
+  swipeToChord: onOff;
+  setSwipeToChord(stc: onOff): any;
   setMineRatio(numOfMines: number): any;
   mineRatio: number;
-  chordingEnabled: boolean;
-  setChordingEnabled(chording: boolean): any;
   numOfRows: number;
   setNumOfRows(rows: number): any;
 }
 
 export default function SettingsPanel({
-  flaggingMode,
-  setFlaggingMode,
-  setSettingsPanelVisible,
+  swipeToFlag,
+  setSwipeToFlag,
   setMineRatio,
   mineRatio,
-  chordingEnabled,
-  setChordingEnabled,
+  swipeToChord,
+  setSwipeToChord,
   numOfRows,
   setNumOfRows,
 }: SettingsPanelProps) {
-  const handleChangeFlaggingMode = () => {
-    let newFlaggingMode = (
-      flaggingMode === "off" ? "withoutMaybe" : "off"
-    ) as flaggingModes;
-    setFlaggingMode(newFlaggingMode);
-    localStorage.setItem("flaggingMode", newFlaggingMode);
-  };
-
-  const handleChangeChordingEnabled = () => {
-    if (chordingEnabled) {
-      setChordingEnabled(false);
-      localStorage.setItem("chordingEnabled", "false");
-    }
-    if (!chordingEnabled) {
-      setChordingEnabled(true);
-      localStorage.setItem("chordingEnabled", "true");
-    }
-  };
-
   let showPWAHint = true;
   (async () => {
     let installedRelatedApps = await (
@@ -56,216 +44,172 @@ export default function SettingsPanel({
   })();
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        height: "100%",
-        width: "100vw",
-        backgroundColor: "#00000088",
-        display: "grid",
-        placeItems: "center",
-      }}
-      onClick={() => {
-        setSettingsPanelVisible(false);
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          background: "white",
-          maxWidth: "370px",
-          width: "92%",
-          borderRadius: "4px",
-          padding: "24px",
-        }}
-        className="settings-panel"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            verticalAlign: "baseline",
-          }}
-        >
-          <h2>Settings</h2>
-          <h2
-            style={{ opacity: "0.4", cursor: "pointer" }}
+    <Root>
+      <Trigger>⚙️</Trigger>
+      <Overlay className="modal-overlay" />
+      <Content className="modal-body settings-panel">
+        <div className="modal-header">
+          <Title className="modal-title">Settings</Title>
+          <Close className="modal-close">
+            <Cross2Icon />
+          </Close>
+        </div>
+        <hr />
+        <div className="selector">
+          <div
+            className={numOfRows === 17 ? "selected" : undefined}
             onClick={() => {
-              setSettingsPanelVisible(false);
+              setNumOfRows(17);
+              localStorage.setItem("numOfRows", "17");
             }}
           >
-            ✖️
-          </h2>
+            <h3>17{numOfRows === 17 && " rows"}</h3>
+          </div>
+          <div
+            className={numOfRows === 18 ? "selected" : undefined}
+            onClick={() => {
+              setNumOfRows(18);
+              localStorage.setItem("numOfRows", "18");
+            }}
+          >
+            <h3>18{numOfRows === 18 && " rows"}</h3>
+          </div>
+          <div
+            className={numOfRows === 19 ? "selected" : undefined}
+            onClick={() => {
+              setNumOfRows(19);
+              localStorage.setItem("numOfRows", "19");
+            }}
+          >
+            <h3>19{numOfRows === 19 && " rows"}</h3>
+          </div>
+          <div
+            className={numOfRows === 20 ? "selected" : undefined}
+            onClick={() => {
+              setNumOfRows(20);
+              localStorage.setItem("numOfRows", "20");
+            }}
+          >
+            <h3>20{numOfRows === 20 && " rows"}</h3>
+          </div>
         </div>
-        <hr />
-        <div>
-          <div className="selector">
-            <div
-              className={numOfRows === 17 ? "selected" : undefined}
-              onClick={() => {
-                setNumOfRows(17);
-                localStorage.setItem("numOfRows", "17");
-              }}
-            >
-              <h3>17{numOfRows === 17 && " rows"}</h3>
-            </div>
-            <div
-              className={numOfRows === 18 ? "selected" : undefined}
-              onClick={() => {
-                setNumOfRows(18);
-                localStorage.setItem("numOfRows", "18");
-              }}
-            >
-              <h3>18{numOfRows === 18 && " rows"}</h3>
-            </div>
-            <div
-              className={numOfRows === 19 ? "selected" : undefined}
-              onClick={() => {
-                setNumOfRows(19);
-                localStorage.setItem("numOfRows", "19");
-              }}
-            >
-              <h3>19{numOfRows === 19 && " rows"}</h3>
-            </div>
-            <div
-              className={numOfRows === 20 ? "selected" : undefined}
-              onClick={() => {
-                setNumOfRows(20);
-                localStorage.setItem("numOfRows", "20");
-              }}
-            >
-              <h3>20{numOfRows === 20 && " rows"}</h3>
-            </div>
+        <div className="selector">
+          <div
+            className={
+              mineRatio === difficulties.easy.mineRatio ? "selected" : undefined
+            }
+            onClick={() => {
+              setMineRatio(difficulties.easy.mineRatio);
+              localStorage.setItem(
+                "mineRatio",
+                difficulties.easy.mineRatio.toString()
+              );
+            }}
+          >
+            <h3>Easy</h3>
+            <p>10% mines</p>
           </div>
-          <div className="selector">
-            <div
-              className={
-                mineRatio === difficulties.easy.mineRatio
-                  ? "selected"
-                  : undefined
-              }
-              onClick={() => {
-                setMineRatio(difficulties.easy.mineRatio);
-                localStorage.setItem(
-                  "mineRatio",
-                  difficulties.easy.mineRatio.toString()
-                );
-              }}
-            >
-              <h3>Easy</h3>
-              <p>10% mines</p>
-            </div>
-            <div
-              className={
-                mineRatio === difficulties.medium.mineRatio
-                  ? "selected"
-                  : undefined
-              }
-              onClick={() => {
-                setMineRatio(difficulties.medium.mineRatio);
-                localStorage.setItem(
-                  "mineRatio",
-                  difficulties.medium.mineRatio.toString()
-                );
-              }}
-            >
-              <h3>Medium</h3>
-              <p>17% mines</p>
-            </div>
-            <div
-              className={
-                mineRatio === difficulties.hard.mineRatio
-                  ? "selected"
-                  : undefined
-              }
-              onClick={() => {
-                setMineRatio(difficulties.hard.mineRatio);
-                localStorage.setItem(
-                  "mineRatio",
-                  difficulties.hard.mineRatio.toString()
-                );
-              }}
-            >
-              <h3>Hard</h3>
-              <p>25% mines</p>
-            </div>
-          </div>
-          <p>
-            Best time on {numOfRows} rows &amp;{" "}
-            {mineRatio === difficulties.hard.mineRatio && "hard"}
-            {mineRatio === difficulties.medium.mineRatio && "medium"}
-            {mineRatio === difficulties.easy.mineRatio && "easy"}:{" "}
-            {localStorage.getItem(`10x${numOfRows}x${mineRatio}m`) ? (
-              <strong>
-                {localStorage.getItem(`10x${numOfRows}x${mineRatio}m`) + "s"}
-              </strong>
-            ) : (
-              "none"
-            )}
-          </p>
-        </div>
-        <hr />
-        <label>
-          <input
-            type="checkbox"
-            checked={flaggingMode === "off" ? false : true}
-            onChange={handleChangeFlaggingMode}
-          />
-          <div>
-            <h3>Flagging</h3>
-            <p>Swipe or right-click a tile to flag it</p>
-          </div>
-        </label>
-
-        <hr />
-        <label>
-          <input
-            type="checkbox"
-            checked={chordingEnabled}
-            onChange={handleChangeChordingEnabled}
-            disabled={flaggingMode === "off" ? true : false}
-            title={
-              flaggingMode === "off"
-                ? "Requires flagging to be enabled"
+          <div
+            className={
+              mineRatio === difficulties.medium.mineRatio
+                ? "selected"
                 : undefined
             }
+            onClick={() => {
+              setMineRatio(difficulties.medium.mineRatio);
+              localStorage.setItem(
+                "mineRatio",
+                difficulties.medium.mineRatio.toString()
+              );
+            }}
+          >
+            <h3>Medium</h3>
+            <p>17% mines</p>
+          </div>
+          <div
+            className={
+              mineRatio === difficulties.hard.mineRatio ? "selected" : undefined
+            }
+            onClick={() => {
+              setMineRatio(difficulties.hard.mineRatio);
+              localStorage.setItem(
+                "mineRatio",
+                difficulties.hard.mineRatio.toString()
+              );
+            }}
+          >
+            <h3>Hard</h3>
+            <p>25% mines</p>
+          </div>
+        </div>
+        <p>
+          Best time on {numOfRows} rows &amp;{" "}
+          {mineRatio === difficulties.hard.mineRatio && "hard"}
+          {mineRatio === difficulties.medium.mineRatio && "medium"}
+          {mineRatio === difficulties.easy.mineRatio && "easy"}:{" "}
+          {localStorage.getItem(`10x${numOfRows}x${mineRatio}m`) ? (
+            <strong>
+              {localStorage.getItem(`10x${numOfRows}x${mineRatio}m`) + "s"}
+            </strong>
+          ) : (
+            "none"
+          )}
+        </p>
+        <hr />
+        <label>
+          <input
+            type="checkbox"
+            checked={swipeToFlag === "off" ? false : true}
+            onChange={() => {
+              if (swipeToFlag === "off") {
+                setSwipeToFlag("on");
+                localStorage.setItem("swipeToFlag", "on");
+              } else {
+                setSwipeToFlag("off");
+                localStorage.setItem("swipeToFlag", "off");
+              }
+            }}
           />
           <div>
-            <h3>Chording</h3>
-            <p>
-              Swipe or right-click a swept tile to sweep all adjacent tiles (if
-              the right number of adjacent mines have been flagged).
-            </p>
+            <h3>Swipe to Flag</h3>
           </div>
         </label>
 
-        <hr />
+        <label>
+          <input
+            type="checkbox"
+            checked={swipeToChord === "off" ? false : true}
+            onChange={() => {
+              if (swipeToChord === "off") {
+                setSwipeToChord("on");
+                localStorage.setItem("swipeToChord", "on");
+              } else {
+                setSwipeToChord("off");
+                localStorage.setItem("swipeToChord", "off");
+              }
+            }}
+          />
+
+          <div>
+            <h3>Swipe to Chord</h3>
+          </div>
+        </label>
         {showPWAHint ? (
-          <>
-            <p>
-              This is a{" "}
-              <a
-                href="https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/"
-                target="_blank"
-              >
-                progressive web app
-              </a>
-              . For the best minesweeping experience and offline play, install
-              this app on your device.
-            </p>
-            <hr />
-          </>
+          <p>
+            Swipe to flag &amp; chord works best when you have installed this{" "}
+            web app on your device. This will also allow you to play offline.
+          </p>
         ) : null}
+        <hr />
+
         <div>
           <p>
             Made with ❤️ by{" "}
-            <a href="https://www.linkedin.com/in/peter-ty-liu/" target="_blank">
+            <a
+              href="https://www.linkedin.com/in/peter-ty-liu/"
+              target="_blank"
+              rel="noreferrer"
+            >
               PL
             </a>
           </p>
@@ -273,12 +217,13 @@ export default function SettingsPanel({
             Enjoying the game?{" "}
             <a
               href=""
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                navigator.clipboard.writeText(
-                  "3AncbaTiG8qT7Lq2XhoXYGzMB4mpsGUCJ6"
-                );
-                alert("Bitcoin address copied to clipboard");
+                navigator.clipboard
+                  .writeText("3AncbaTiG8qT7Lq2XhoXYGzMB4mpsGUCJ6")
+                  .then(() => {
+                    alert("Bitcoin address copied to clipboard");
+                  });
               }}
             >
               Buy me a cup of coffee
@@ -289,7 +234,7 @@ export default function SettingsPanel({
             {versionAndDate}
           </p>
         </div>
-      </div>
-    </div>
+      </Content>
+    </Root>
   );
 }

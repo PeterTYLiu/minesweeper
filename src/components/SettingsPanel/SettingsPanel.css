@@ -23,7 +23,6 @@ input[type="checkbox"] {
 
 .selector {
   display: flex;
-  margin-bottom: 14px;
 }
 .selector > div {
   flex-grow: 1;

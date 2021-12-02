@@ -4,12 +4,16 @@ interface TimerProps {
   gameStatus: "preGame" | "inGame" | "wonGame" | "lostGame";
   currentFormat: string;
   setMessage(message: string): any;
+  setNewRecordOpen(foo: boolean): any;
+  setOldAndNewRecords(foo: { old: number | undefined; new: number }): any;
 }
 
 export default function Timer({
   gameStatus,
   currentFormat,
   setMessage,
+  setNewRecordOpen,
+  setOldAndNewRecords,
 }: TimerProps) {
   const [timeElapsed, setTimeElapsed] = useState(0);
 
@@ -30,8 +34,11 @@ export default function Timer({
       let prevRecordTime = localStorage.getItem(currentFormat);
       if (!prevRecordTime || timeElapsed < Number(prevRecordTime)) {
         localStorage.setItem(currentFormat, timeElapsed.toString());
-        setMessage(`🎉 New record!`);
-        console.log(`New record: ${timeElapsed}s`);
+        setOldAndNewRecords({
+          old: prevRecordTime ? Number(prevRecordTime) : undefined,
+          new: timeElapsed,
+        });
+        setNewRecordOpen(true);
       }
     }
     if (gameStatus === "preGame") {
@@ -41,6 +48,7 @@ export default function Timer({
 
   return (
     <>
+      🕒{" "}
       {timeElapsed.toString().includes(".")
         ? timeElapsed
         : timeElapsed.toString() + ".0"}
