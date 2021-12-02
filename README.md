@@ -1,3 +1,3 @@
 # Minesweeper
 
-Play and install [here](https://petertyliu.github.io/minesweeper).
+Play and install [here](https://SweepThoseMines.com).
