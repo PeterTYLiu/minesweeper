@@ -33,7 +33,7 @@ body,
 
 .controls {
   height: 40px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -233,7 +233,7 @@ button[aria-haspopup="dialog"] {
   width: 42px;
   border: none;
   border-radius: 4px;
-  margin-left: 8px;
+  margin-left: 6px;
   background: var(--button-background-color);
   font-size: 1.2rem;
   transition: all 0.2s;
@@ -244,4 +244,13 @@ button[aria-haspopup="dialog"] {
 
 button[aria-haspopup="dialog"]:hover {
   background-color: var(--button-hover-background-color);
+}
+@media screen and (max-height: 900px) {
+  .board {
+    gap: 2px;
+  }
+
+  .board > div {
+    gap: 2px;
+  }
 }
