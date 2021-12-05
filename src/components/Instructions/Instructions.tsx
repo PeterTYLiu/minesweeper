@@ -7,7 +7,7 @@ import {
   Title,
   Close,
 } from "@radix-ui/react-dialog";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, QuestionMarkIcon } from "@radix-ui/react-icons";
 import "./Instructions.css";
 
 export default function Instructions() {
@@ -15,7 +15,9 @@ export default function Instructions() {
     <Root
       defaultOpen={localStorage.getItem("hasSeenInstructions") ? false : true}
     >
-      <Trigger>❔</Trigger>
+      <Trigger>
+        <QuestionMarkIcon />
+      </Trigger>
       <Overlay className="modal-overlay" />
       <Content className="modal-body">
         <div className="modal-header">

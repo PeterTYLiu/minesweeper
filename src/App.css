@@ -20,6 +20,7 @@ body,
 .App {
   height: 100%;
   overscroll-behavior-y: contain;
+  user-select: none;
 }
 
 .App {
@@ -229,17 +230,25 @@ div[data-radix-portal] {
   width: 26px;
 }
 button[aria-haspopup="dialog"] {
+  padding: 0;
   height: 42px;
   width: 42px;
-  border: none;
   border-radius: 4px;
   margin-left: 6px;
   background: var(--button-background-color);
-  font-size: 1.2rem;
   transition: all 0.2s;
   cursor: pointer;
   user-select: none;
   border: 1px solid var(--button-border-color);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button[aria-haspopup="dialog"] svg {
+  height: 24px;
+  width: 24px;
+  color: #001d5cb9;
 }
 
 button[aria-haspopup="dialog"]:hover {

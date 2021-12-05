@@ -10,9 +10,9 @@ import {
   Title,
   Close,
 } from "@radix-ui/react-dialog";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, GearIcon } from "@radix-ui/react-icons";
 
-const versionAndDate = "v2.0.2 (2/12/2021)";
+const versionAndDate = "v2.0.3 (5/12/2021)";
 
 interface SettingsPanelProps {
   swipeToFlag: onOff;
@@ -45,7 +45,9 @@ export default function SettingsPanel({
 
   return (
     <Root>
-      <Trigger>⚙️</Trigger>
+      <Trigger>
+        <GearIcon />
+      </Trigger>
       <Overlay className="modal-overlay" />
       <Content className="modal-body settings-panel">
         <div className="modal-header">
