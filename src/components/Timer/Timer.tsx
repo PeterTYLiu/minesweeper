@@ -28,8 +28,6 @@ export default function Timer({
   }, [gameStatus, timeElapsed]);
 
   useEffect(() => {
-    console.log(`The game status is ${gameStatus}`);
-
     if (gameStatus === "wonGame") {
       let prevRecordTime = localStorage.getItem(currentFormat);
       if (!prevRecordTime || timeElapsed < Number(prevRecordTime)) {

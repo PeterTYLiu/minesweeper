@@ -61,31 +61,6 @@ export default function Tile({
     }
   };
 
-  // const handleMouseDownOrTouchStart = (e: any) => {
-  //   if (
-  //     (e.type === "touchstart" || e.button === 2) &&
-  //     swept &&
-  //     minesAround &&
-  //     chordingEnabled
-  //   ) {
-  //     let chordableTilesIds = [
-  //       boardState.find((tile) => tile.r === r && tile.c === c + 1),
-  //       boardState.find((tile) => tile.r === r && tile.c === c - 1),
-  //       boardState.find((tile) => tile.r === r + 1 && tile.c === c),
-  //       boardState.find((tile) => tile.r === r - 1 && tile.c === c),
-  //       boardState.find((tile) => tile.r === r + 1 && tile.c === c + 1),
-  //       boardState.find((tile) => tile.r === r - 1 && tile.c === c - 1),
-  //       boardState.find((tile) => tile.r === r + 1 && tile.c === c - 1),
-  //       boardState.find((tile) => tile.r === r - 1 && tile.c === c + 1),
-  //     ]
-  //       .filter((tile) => !tile?.swept && tile?.flagStatus === "unflagged")
-  //       .map((tile) => tile?.id);
-  //     chordableTilesIds.forEach((id) => {
-  //       document.querySelector(`.id-${id}`)?.classList.add("hover");
-  //     });
-  //   }
-  // };
-
   const highlightTilesToChord = () => {
     if (swept && minesAround) {
       let chordableTilesIds = [

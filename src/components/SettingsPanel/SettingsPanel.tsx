@@ -12,7 +12,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { Cross2Icon, GearIcon } from "@radix-ui/react-icons";
 
-const versionAndDate = "v2.0.3 (5/12/2021)";
+const versionAndDate = "v2.0.4 (6/12/2021)";
 
 interface SettingsPanelProps {
   swipeToFlag: onOff;
@@ -217,8 +217,12 @@ export default function SettingsPanel({
           </p>
           <p style={{ fontSize: "14px", marginTop: "14px" }}>
             Enjoying the game?{" "}
-            <a
-              href=""
+            <span
+              style={{
+                cursor: "pointer",
+                color: "blue",
+                textDecoration: "underline",
+              }}
               onClick={async (e) => {
                 e.preventDefault();
                 navigator.clipboard
@@ -229,7 +233,7 @@ export default function SettingsPanel({
               }}
             >
               Buy me a cup of coffee
-            </a>{" "}
+            </span>{" "}
             :)
           </p>
           <p style={{ fontSize: "14px", opacity: "0.5", marginTop: "14px" }}>
