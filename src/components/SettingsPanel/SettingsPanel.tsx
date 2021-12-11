@@ -12,7 +12,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { Cross2Icon, GearIcon } from "@radix-ui/react-icons";
 
-const versionAndDate = "v2.0.4 (6/12/2021)";
+const versionAndDate = "v2.0.5 (11/12/2021)";
 
 interface SettingsPanelProps {
   swipeToFlag: onOff;

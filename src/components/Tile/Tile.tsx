@@ -30,8 +30,8 @@ export default function Tile({
 }: TileProps) {
   const { swept, isMine, minesAround, flagStatus, id, c, r } = tile;
 
-  const handleContextMenu = () => {
-    if (!swept) {
+  const handleContextMenu = (e: any) => {
+    if (!swept && e.button === 2) {
       const newBoardState = [...boardState];
       newBoardState[id - 1].flagStatus =
         flagStatus === "flagged" ? "unflagged" : "flagged";
@@ -58,6 +58,22 @@ export default function Tile({
         floodFill(newBoardState[id - 1], newBoardState);
       }
       setBoardState(newBoardState);
+    }
+  };
+
+  const handleTouchStart = (e: any) => {
+    highlightTilesToChord();
+
+    if (!swept) {
+      let flagThisTile = setTimeout(() => {
+        const newBoardState = [...boardState];
+        newBoardState[id - 1].flagStatus =
+          flagStatus === "flagged" ? "unflagged" : "flagged";
+        return setBoardState(newBoardState);
+      }, 800);
+      e.target.addEventListener("touchend", () => {
+        clearTimeout(flagThisTile);
+      });
     }
   };
 
@@ -152,7 +168,7 @@ export default function Tile({
   return (
     <div
       onMouseDown={highlightTilesToChord}
-      onTouchStart={highlightTilesToChord}
+      onTouchStart={handleTouchStart}
       onMouseUp={unhighlightTilesToChord}
       onTouchEnd={unhighlightTilesToChord}
       onMouseLeave={unhighlightTilesToChord}
@@ -163,7 +179,7 @@ export default function Tile({
       } around-${minesAround}`}
       onContextMenu={(e) => {
         e.preventDefault();
-        handleContextMenu();
+        handleContextMenu(e);
       }}
       onClick={handleClick}
     >
