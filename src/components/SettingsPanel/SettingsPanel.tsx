@@ -1,5 +1,4 @@
 import React from "react";
-import { onOff } from "../../types/settings";
 import "./SettingsPanel.css";
 import difficulties from "../../utilities/difficulties";
 import {
@@ -12,13 +11,15 @@ import {
 } from "@radix-ui/react-dialog";
 import { Cross2Icon, GearIcon } from "@radix-ui/react-icons";
 
-const versionAndDate = "v2.0.6 (11/01/2022)";
+const versionAndDate = "v2.1 (16/01/2022)";
 
 interface SettingsPanelProps {
-  swipeToFlag: onOff;
-  setSwipeToFlag(stf: onOff): any;
-  swipeToChord: onOff;
-  setSwipeToChord(stc: onOff): any;
+  instalose: boolean;
+  setInstalose(il: boolean): any;
+  swipeToFlag: boolean;
+  setSwipeToFlag(stf: boolean): any;
+  swipeToChord: boolean;
+  setSwipeToChord(stc: boolean): any;
   setMineRatio(numOfMines: number): any;
   mineRatio: number;
   numOfRows: number;
@@ -26,6 +27,8 @@ interface SettingsPanelProps {
 }
 
 export default function SettingsPanel({
+  instalose,
+  setInstalose,
   swipeToFlag,
   setSwipeToFlag,
   setMineRatio,
@@ -161,15 +164,10 @@ export default function SettingsPanel({
         <label>
           <input
             type="checkbox"
-            checked={swipeToFlag === "off" ? false : true}
+            checked={swipeToFlag}
             onChange={() => {
-              if (swipeToFlag === "off") {
-                setSwipeToFlag("on");
-                localStorage.setItem("swipeToFlag", "on");
-              } else {
-                setSwipeToFlag("off");
-                localStorage.setItem("swipeToFlag", "off");
-              }
+              setSwipeToFlag(!swipeToFlag);
+              localStorage.setItem("swipeToFlag", (!swipeToFlag).toString());
             }}
           />
           <div>
@@ -180,15 +178,10 @@ export default function SettingsPanel({
         <label>
           <input
             type="checkbox"
-            checked={swipeToChord === "off" ? false : true}
+            checked={swipeToChord}
             onChange={() => {
-              if (swipeToChord === "off") {
-                setSwipeToChord("on");
-                localStorage.setItem("swipeToChord", "on");
-              } else {
-                setSwipeToChord("off");
-                localStorage.setItem("swipeToChord", "off");
-              }
+              setSwipeToChord(!swipeToChord);
+              localStorage.setItem("swipeToChord", (!swipeToChord).toString());
             }}
           />
 
@@ -203,7 +196,22 @@ export default function SettingsPanel({
           </p>
         ) : null}
         <hr />
+        <label>
+          <input
+            type="checkbox"
+            checked={instalose}
+            onChange={() => {
+              setInstalose(!instalose);
+              localStorage.setItem("instalose", (!instalose).toString());
+            }}
+          />
 
+          <div>
+            <h3>Auto-endgame</h3>
+          </div>
+        </label>
+        <p>Automatically end the game when you pass your record time</p>
+        <hr />
         <div>
           <p>
             Made with ❤️ by{" "}
