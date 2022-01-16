@@ -9,9 +9,9 @@ import NewRecord from "./components/NewRecord";
 // Typescript
 import ITile from "./types/tile";
 import { gameStatuses } from "./types/gameStatuses";
-import { onOff } from "./types/settings";
-// UTility functions
+// Utility functions
 import floodFill from "./utilities/floodFill";
+import parseBoolean from "./utilities/parseBoolean";
 
 function App() {
   //defaults
@@ -29,15 +29,14 @@ function App() {
       ? Number(localStorage.getItem("mineRatio"))
       : defaultMineRatio
   );
-  const [swipeToFlag, setSwipeToFlag] = useState<onOff>(
-    localStorage.getItem("swipeToFlag")
-      ? (localStorage.getItem("swipeToFlag") as onOff)
-      : "off"
+  const [swipeToFlag, setSwipeToFlag] = useState(
+    parseBoolean(localStorage.getItem("swipeToFlag"))
   );
-  const [swipeToChord, setSwipeToChord] = useState<onOff>(
-    localStorage.getItem("swipeToChord")
-      ? (localStorage.getItem("swipeToChord") as onOff)
-      : "off"
+  const [swipeToChord, setSwipeToChord] = useState(
+    parseBoolean(localStorage.getItem("swipeToChord"))
+  );
+  const [instalose, setInstalose] = useState(
+    parseBoolean(localStorage.getItem("instalose"))
   );
 
   // Utility functions
@@ -315,6 +314,8 @@ function App() {
               message
             ) : (
               <Timer
+                instalose={instalose}
+                loseGame={loseGame}
                 gameStatus={gameStatus}
                 setMessage={setMessage}
                 currentFormat={`${numOfColumns}x${numOfRows}x${mineRatio}m`}
@@ -348,6 +349,8 @@ function App() {
               <>
                 <Instructions />
                 <SettingsPanel
+                  setInstalose={setInstalose}
+                  instalose={instalose}
                   swipeToFlag={swipeToFlag}
                   setSwipeToFlag={setSwipeToFlag}
                   swipeToChord={swipeToChord}

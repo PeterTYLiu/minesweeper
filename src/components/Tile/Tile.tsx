@@ -3,7 +3,6 @@ import { useSwipeable } from "react-swipeable";
 // Typescript
 import ITile from "../../types/tile";
 import { gameStatuses } from "../../types/gameStatuses";
-import { onOff } from "../../types/settings";
 
 interface TileProps {
   tile: ITile;
@@ -13,8 +12,8 @@ interface TileProps {
   loseGame(arrOfIds: number[]): any;
   gameStatus: gameStatuses;
   chord(triggerTile: ITile, boardState: ITile[]): any;
-  swipeToFlag: onOff;
-  swipeToChord: onOff;
+  swipeToFlag: boolean;
+  swipeToChord: boolean;
 }
 
 export default function Tile({
@@ -108,9 +107,9 @@ export default function Tile({
 
   const swipeHandler = useSwipeable({
     onSwiped: () => {
-      if (swipeToChord === "on" && swept && !isMine && minesAround) {
+      if (swipeToChord && swept && !isMine && minesAround) {
         chord(tile, boardState);
-      } else if (swipeToFlag === "on" && !swept) {
+      } else if (swipeToFlag && !swept) {
         const newBoardState = [...boardState];
         newBoardState[id - 1].flagStatus =
           flagStatus === "flagged" ? "unflagged" : "flagged";

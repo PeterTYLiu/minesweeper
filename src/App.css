@@ -194,7 +194,7 @@ div[data-radix-portal] {
 .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   background: white;
   max-width: 380px;
   width: 92%;

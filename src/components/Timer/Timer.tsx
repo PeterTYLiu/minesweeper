@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 
 interface TimerProps {
   gameStatus: "preGame" | "inGame" | "wonGame" | "lostGame";
+  instalose: boolean;
+  loseGame(arrOfIds: number[]): any;
   currentFormat: string;
   setMessage(message: string): any;
   setNewRecordOpen(foo: boolean): any;
@@ -9,6 +11,8 @@ interface TimerProps {
 }
 
 export default function Timer({
+  instalose,
+  loseGame,
   gameStatus,
   currentFormat,
   setMessage,
@@ -16,8 +20,21 @@ export default function Timer({
   setOldAndNewRecords,
 }: TimerProps) {
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [currentRecord, setCurrentRecord] = useState<number | null>(
+    localStorage.getItem(currentFormat)
+      ? Number(localStorage.getItem(currentFormat))
+      : null
+  );
 
   useEffect(() => {
+    if (
+      gameStatus === "inGame" &&
+      currentRecord &&
+      instalose &&
+      timeElapsed > currentRecord
+    ) {
+      return loseGame([]);
+    }
     if (gameStatus === "inGame") {
       const timer = setInterval(() => {
         setTimeElapsed(Number((timeElapsed + 0.1).toFixed(1)));
@@ -37,6 +54,7 @@ export default function Timer({
           new: timeElapsed,
         });
         setNewRecordOpen(true);
+        setCurrentRecord(timeElapsed);
       }
     }
     if (gameStatus === "preGame") {
