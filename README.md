@@ -1,3 +1,3 @@
 # Minesweeper
 
-Play and install [here](https://SweepThoseMines.com).
+Play and install at [SweepThoseMines.com](https://SweepThoseMines.com).
